@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Torsen — Your AI Data Is Worth More Than Nothing</title>
+  <meta name="description" content="52 million people run AI locally. They generate the richest training data in existence — and all of it vanishes. Torsen captures it, anonymizes it on-device, and lets you earn from it." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Particle layer -->
+<canvas id="canvas"></canvas>
+
+<!-- Hero glow -->
+<div class="hero-glow" aria-hidden="true"></div>
+
+<div class="page">
+
+  <!-- ── Nav ── -->
+  <header>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#" class="logo" aria-label="Torsen home">
+        <svg class="logo-mark" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="6"  y="6"  width="30" height="68" rx="9" fill="#C9A55A"/>
+          <rect x="36" y="6"  width="38" height="30" rx="9" fill="#C9A55A"/>
+          <path d="M36 36 Q74 36 74 74 L45 74 Q45 55 36 55 Z" fill="#C9A55A"/>
+        </svg>
+        <span class="logo-name">torsen</span>
+      </a>
+      <a href="mailto:hello@torsen.ai" class="nav-cta">hello@torsen.ai</a>
+    </nav>
+  </header>
+
+  <!-- ── Hero ── -->
+  <section class="hero" aria-labelledby="hero-headline">
+
+    <div class="badge" role="status">
+      <span class="badge-dot" aria-hidden="true"></span>
+      Launching Summer 2026
+    </div>
+
+    <h1 class="hero-headline" id="hero-headline">
+      Your AI data is worth<br /><em>more than nothing</em>
+    </h1>
+
+    <p class="hero-sub">
+      52 million people run AI locally. They generate the richest
+      training data in existence — and all of it vanishes. Torsen
+      captures it, anonymizes it on-device, and lets you earn from it.
+    </p>
+
+    <div class="stats" aria-label="Key statistics">
+      <div class="stat">
+        <div class="stat-value">52M</div>
+        <div class="stat-label">Local AI users</div>
+      </div>
+      <div class="stat-sep" aria-hidden="true"></div>
+      <div class="stat">
+        <div class="stat-value">0%</div>
+        <div class="stat-label">of data captured</div>
+      </div>
+      <div class="stat-sep" aria-hidden="true"></div>
+      <div class="stat">
+        <div class="stat-value">$4.2B</div>
+        <div class="stat-label">Training data market</div>
+      </div>
+    </div>
+
+    <div class="hero-form-wrap">
+      <form id="hero-form" action="https://formsubmit.co/cyrilletabe@torsen.ai" method="POST" novalidate aria-label="Early access waitlist">
+        <input type="hidden" name="_subject" value="Torsen — new early access signup" />
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+        <div class="hero-bar">
+          <input
+            class="hero-input"
+            type="email"
+            id="hero-email"
+            name="email"
+            placeholder="you@email.com"
+            required
+            autocomplete="email"
+            aria-label="Your email address"
+          />
+          <button class="btn-gold" type="submit">Get early access</button>
+        </div>
+      </form>
+      <div class="hero-form-success" id="hero-success" role="status" aria-live="polite">
+        You're on the list — we'll be in touch soon.
+      </div>
+      <p class="hero-note">No spam. Unsubscribe any time.</p>
+    </div>
+
+    <div class="scroll-cue" aria-hidden="true">
+      <span>Scroll</span>
+      <div class="scroll-arrow"></div>
+    </div>
+
+  </section>
+
+  <!-- ── How it works ── -->
+  <section class="section" id="how-it-works" aria-labelledby="how-title">
+    <div class="section-inner">
+
+      <p class="section-label">How it works</p>
+      <h2 class="section-title" id="how-title">Simple by design.</h2>
+
+      <div class="steps-grid">
+        <article class="step-card" aria-label="Step 1">
+          <div class="step-num">01</div>
+          <h3 class="step-title">You run AI locally</h3>
+          <p class="step-desc">Ollama, LM Studio, Claude Code — Torsen works silently alongside every local AI tool you already use. Nothing changes in your workflow.</p>
+        </article>
+
+        <article class="step-card" aria-label="Step 2">
+          <div class="step-num">02</div>
+          <h3 class="step-title">Torsen captures &amp; anonymizes</h3>
+          <p class="step-desc">Every prompt and response is captured and anonymized on-device before it ever leaves your machine. Torsen never sees your raw data.</p>
+        </article>
+
+        <article class="step-card" aria-label="Step 3">
+          <div class="step-num">03</div>
+          <h3 class="step-title">You earn from your expertise</h3>
+          <p class="step-desc">Your anonymized data is sold to AI labs, research teams, and enterprises. You set the price. You keep 95%. Paid monthly.</p>
+        </article>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Divider ── -->
+  <div class="divider" id="divider" role="separator" aria-hidden="true"></div>
+
+  <!-- ── Contact ── -->
+  <section class="contact-section" id="contact" aria-labelledby="contact-title">
+
+    <p class="section-label">Get in touch</p>
+    <h2 class="section-title" id="contact-title">Interested? Let us know.</h2>
+
+    <div class="contact-card">
+      <form class="contact-form" id="contact-form" action="https://formsubmit.co/cyrilletabe@torsen.ai" method="POST" novalidate aria-label="Contact form">
+
+        <!-- FormSubmit config -->
+        <input type="hidden" name="_subject" value="[Torsen] New message from torsen.ai" />
+        <input type="hidden" name="_replyto" />
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="hidden" name="_template" value="table" />
+        <!-- Honeypot -->
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+
+        <div class="field">
+          <label class="field-label" for="c-email">Email</label>
+          <input
+            class="field-input"
+            type="email"
+            id="c-email"
+            name="email"
+            placeholder="you@email.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="c-message">
+            Message
+            <span class="opt">— optional</span>
+          </label>
+          <textarea
+            class="field-textarea"
+            id="c-message"
+            name="message"
+            placeholder="Tell us what you're thinking…"
+            maxlength="2000"
+          ></textarea>
+        </div>
+
+        <button class="btn-submit" type="submit">Send message</button>
+
+        <p class="form-error" id="contact-error" role="alert" aria-live="assertive"></p>
+      </form>
+
+      <div class="form-success-msg" id="contact-success" role="status" aria-live="polite">
+        Message received.<br />
+        We'll get back to you at <strong id="reply-addr"></strong>.
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    &copy; 2026 Torsen AI, Inc. &nbsp;&middot;&nbsp; torsen.ai
+  </footer>
+
+</div><!-- .page -->
+
+<!-- ── Scripts ── -->
+<script>
+/* ═══════════════════════════════════════
+   Particle canvas
+═══════════════════════════════════════ */
+(function () {
+  const cvs = document.getElementById('canvas');
+  const ctx = cvs.getContext('2d');
+  let W, H, pts;
+
+  const R = 201, G = 165, B = 90;
+
+  function resize() {
+    W = cvs.width  = window.innerWidth;
+    H = cvs.height = window.innerHeight;
+  }
+
+  function init() {
+    const n = Math.floor((W * H) / 8800);
+    pts = Array.from({ length: n }, () => ({
+      x:  Math.random() * W,
+      y:  Math.random() * H,
+      r:  Math.random() * 1.15 + 0.15,
+      a:  Math.random(),
+      da: (Math.random() - 0.5) * 0.0025,
+      vx: (Math.random() - 0.5) * 0.07,
+      vy: (Math.random() - 0.5) * 0.07,
+    }));
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of pts) {
+      p.x = (p.x + p.vx + W) % W;
+      p.y = (p.y + p.vy + H) % H;
+      p.a += p.da;
+      if (p.a <= 0.04 || p.a >= 0.95) p.da *= -1;
+      p.a = Math.max(0.04, Math.min(0.95, p.a));
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${R},${G},${B},${(p.a * 0.55).toFixed(3)})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+
+  window.addEventListener('resize', () => { resize(); init(); }, { passive: true });
+  resize(); init(); tick();
+})();
+
+/* ═══════════════════════════════════════
+   Scroll-reveal (IntersectionObserver)
+═══════════════════════════════════════ */
+(function () {
+  const cards = document.querySelectorAll('.step-card');
+  cards.forEach(c => {
+    c.style.opacity   = '0';
+    c.style.transform = 'translateY(28px)';
+  });
+
+  const cardIO = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const i = [...cards].indexOf(entry.target);
+      entry.target.style.transition =
+        `opacity 0.65s cubic-bezier(0.22,1,0.36,1) ${i * 0.12}s,
+         transform 0.65s cubic-bezier(0.22,1,0.36,1) ${i * 0.12}s`;
+      entry.target.style.opacity   = '1';
+      entry.target.style.transform = 'translateY(0)';
+      cardIO.unobserve(entry.target);
+    });
+  }, { threshold: 0.12 });
+
+  cards.forEach(c => cardIO.observe(c));
+
+  const revealIO = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealIO.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.divider, .contact-section')
+    .forEach(el => revealIO.observe(el));
+})();
+
+/* ═══════════════════════════════════════
+   Form submission via FormSubmit (AJAX)
+   Sends directly to cyrilletabe@torsen.ai
+═══════════════════════════════════════ */
+function handleForm(formEl, successEl, opts) {
+  formEl.addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    var btn   = this.querySelector('button[type="submit"]');
+    var errEl = this.querySelector('.form-error');
+    var email = this.querySelector('input[type="email"]').value.trim();
+
+    if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      if (errEl) {
+        errEl.textContent   = 'Please enter a valid email address.';
+        errEl.style.display = 'block';
+      }
+      this.querySelector('input[type="email"]').focus();
+      return;
+    }
+
+    var replyTo = this.querySelector('input[name="_replyto"]');
+    if (replyTo) replyTo.value = email;
+
+    var origText = btn.textContent;
+    btn.textContent = 'Sending…';
+    btn.disabled    = true;
+
+    try {
+      var formData = new FormData(this);
+      var jsonBody = {};
+      formData.forEach(function (value, key) { jsonBody[key] = value; });
+
+      var res = await fetch(this.action, {
+        method:  'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(jsonBody),
+      });
+
+      var data = await res.json().catch(function () { return {}; });
+
+      if (res.ok && data.success) {
+        this.style.display      = 'none';
+        successEl.style.display = 'block';
+        if (opts && opts.onSuccess) opts.onSuccess(email);
+      } else {
+        var msg = data.message || 'Something went wrong. Please try again.';
+        if (errEl) {
+          errEl.textContent   = msg;
+          errEl.style.display = 'block';
+        }
+        btn.textContent = origText;
+        btn.disabled    = false;
+      }
+    } catch (err) {
+      if (errEl) {
+        errEl.textContent   = 'Network error — please try again or email us directly.';
+        errEl.style.display = 'block';
+      }
+      btn.textContent = origText;
+      btn.disabled    = false;
+    }
+  });
+}
+
+// Hero waitlist
+handleForm(
+  document.getElementById('hero-form'),
+  document.getElementById('hero-success')
+);
+
+// Contact form
+handleForm(
+  document.getElementById('contact-form'),
+  document.getElementById('contact-success'),
+  {
+    onSuccess: function (email) {
+      document.getElementById('reply-addr').textContent = email;
+    }
+  }
+);
+</script>
+
+</body>
+</html>
