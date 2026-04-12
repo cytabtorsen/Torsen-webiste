@@ -128,7 +128,7 @@ body::before {
   color: inherit;
 }
 
-.logo-mark { width: auto; height: 36px; flex-shrink: 0; mix-blend-mode: screen; }
+.logo-mark { width: auto; height: 36px; flex-shrink: 0; }
 
 .logo-name {
   font-size: 16px;
@@ -631,15 +631,66 @@ body::before {
    RESPONSIVE
 ──────────────────────────────── */
 @media (max-width: 720px) {
+  .hero {
+    padding-top: var(--s8);
+    padding-left: var(--s4);
+    padding-right: var(--s4);
+  }
+
+  .hero-headline {
+    font-size: clamp(36px, 9vw, 52px);
+  }
+
+  .hero-sub {
+    font-size: 15px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: var(--s5);
+  }
+
+  .stat-sep { display: none; }
+
   .steps-grid {
     grid-template-columns: 1fr;
     gap: var(--s4);
   }
 
-  .stats { gap: var(--s6); }
-  .stat-sep { display: none; }
+  .step-card { padding: var(--s5) var(--s5) var(--s5); }
 
-  .nav { padding: var(--s6) var(--s5) 0; }
+  .nav { padding: var(--s5) var(--s4) 0; }
 
-  .contact-card { padding: var(--s6) var(--s5); }
+  .section {
+    padding: var(--s8) var(--s4);
+  }
+
+  .section-title {
+    font-size: clamp(24px, 6vw, 32px);
+    margin-bottom: var(--s7);
+  }
+
+  .contact-section {
+    padding: var(--s8) var(--s4);
+  }
+
+  .contact-card { padding: var(--s6) var(--s4); }
+
+  .scroll-cue { padding-top: var(--s7); }
+
+  .badge { margin-bottom: var(--s6); }
+
+  .footer { padding: var(--s5) var(--s4); }
+}
+
+@media (max-width: 380px) {
+  .hero-headline {
+    font-size: 32px;
+  }
+
+  .stat-value {
+    font-size: 28px;
+  }
+
+  .contact-card { padding: var(--s5) var(--s3); }
 }
