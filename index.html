@@ -28,12 +28,7 @@
   <header>
     <nav class="nav" aria-label="Main navigation">
       <a href="#" class="logo" aria-label="Torsen home">
-        <svg class="logo-mark" viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <!-- Left piece: top-left crossbar + vertical stem -->
-          <path d="M12,0 H40 V34 C40,48 28,52 28,64 V96 Q28,110 14,110 Q0,110 0,96 V12 Q0,0 12,0 Z" fill="#C9A55A"/>
-          <!-- Right piece: top-right crossbar with curved tail -->
-          <path d="M48,0 H84 Q100,0 100,16 V18 Q100,34 84,34 H60 C48,34 48,50 48,64 V0 Z" fill="#C9A55A"/>
-        </svg>
+        <img class="logo-mark" src="logo.png" alt="Torsen logo" />
         <span class="logo-name">Torsen</span>
       </a>
     </nav>
@@ -127,7 +122,7 @@
         <!-- FormSubmit config -->
         <input type="hidden" name="_subject" value="[Torsen] New message from torsen.ai" />
         <input type="hidden" name="_replyto" />
-        <input type="hidden" name="_captcha" value="false" />
+        <input type="hidden" name="_captcha" value="true" />
         <input type="hidden" name="_template" value="table" />
         <!-- Honeypot -->
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
@@ -272,6 +267,9 @@
    Form submission via FormSubmit (AJAX)
    Sends directly to cyrilletabe@torsen.ai
 ═══════════════════════════════════════ */
+var lastSubmitTime = 0;
+var COOLDOWN = 60000; // 60 seconds between submissions
+
 function handleForm(formEl, successEl, opts) {
   formEl.addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -281,6 +279,17 @@ function handleForm(formEl, successEl, opts) {
     var email = this.querySelector('input[type="email"]').value.trim();
 
     if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+
+    // Rate limit: 1 submission per 60 seconds
+    var now = Date.now();
+    if (now - lastSubmitTime < COOLDOWN) {
+      var wait = Math.ceil((COOLDOWN - (now - lastSubmitTime)) / 1000);
+      if (errEl) {
+        errEl.textContent = 'Please wait ' + wait + ' seconds before submitting again.';
+        errEl.style.display = 'block';
+      }
+      return;
+    }
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       if (errEl) {
@@ -315,6 +324,7 @@ function handleForm(formEl, successEl, opts) {
       var data = await res.json().catch(function () { return {}; });
 
       if (res.ok && data.success) {
+        lastSubmitTime = Date.now();
         this.style.display      = 'none';
         successEl.style.display = 'block';
         if (opts && opts.onSuccess) opts.onSuccess(email);
