@@ -128,7 +128,7 @@ body::before {
   color: inherit;
 }
 
-.logo-mark { width: 32px; height: 32px; flex-shrink: 0; }
+.logo-mark { width: auto; height: 34px; flex-shrink: 0; }
 
 .logo-name {
   font-size: 16px;
