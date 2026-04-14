@@ -474,7 +474,34 @@ body::before {
 }
 
 /* ────────────────────────────────
-   CONTACT
+   TRUST / PRIVACY
+──────────────────────────────── */
+.trust-section {
+  padding: var(--s10) var(--s5);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+}
+
+.trust-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.trust-block {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.trust-text {
+  font-size: clamp(15px, 1.8vw, 17px);
+  line-height: 1.75;
+  color: var(--text-muted);
+}
+
+/* ────────────────────────────────
+   CONTACT / DUAL CTA
 ──────────────────────────────── */
 .contact-section {
   padding: var(--s10) var(--s5) var(--s10);
@@ -492,20 +519,42 @@ body::before {
   transform: translateY(0);
 }
 
+.cta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s5);
+  width: 100%;
+  max-width: 860px;
+  margin-top: var(--s7);
+}
+
 .contact-card {
   width: 100%;
-  max-width: 520px;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: 24px;
-  padding: var(--s8) var(--s7);
-  margin-top: var(--s7);
+  padding: var(--s7) var(--s6);
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .contact-card:focus-within {
   border-color: var(--gold-border);
   box-shadow: 0 0 0 3px var(--gold-glow), 0 12px 60px rgba(0,0,0,0.3);
+}
+
+.cta-card-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: var(--s2);
+}
+
+.cta-card-desc {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  margin-bottom: var(--s5);
 }
 
 .contact-form {
@@ -674,7 +723,13 @@ body::before {
     padding: var(--s8) var(--s4);
   }
 
+  .cta-grid {
+    grid-template-columns: 1fr;
+  }
+
   .contact-card { padding: var(--s6) var(--s4); }
+
+  .trust-section { padding: var(--s8) var(--s4); }
 
   .scroll-cue { padding-top: var(--s7); }
 
@@ -693,4 +748,6 @@ body::before {
   }
 
   .contact-card { padding: var(--s5) var(--s3); }
+
+  .cta-card-title { font-size: 19px; }
 }

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Torsen — Your AI Data Is Worth More Than Nothing</title>
-  <meta name="description" content="52 million people run AI locally. They generate the richest training data in existence — and all of it vanishes. Torsen captures it, anonymizes it on-device, and lets you earn from it." />
+  <meta name="description" content="Millions of developers run AI locally — generating the richest training data in existence. All of it vanishes. Torsen captures it, anonymizes it on-device, and lets you earn from it." />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -49,9 +49,10 @@
     </h1>
 
     <p class="hero-sub">
-      52 million people run AI locally. They generate the richest
-      training data in existence — and all of it vanishes. Torsen
-      captures it, anonymizes it on-device, and lets you earn from it.
+      Over 52 million monthly model downloads on Ollama alone — and
+      that's just one tool. Developers generate the richest training
+      data in existence, and all of it vanishes. Torsen captures it,
+      anonymizes it on-device, and lets you earn from it.
     </p>
 
     <div class="stats" aria-label="Key statistics">
@@ -66,8 +67,8 @@
       </div>
       <div class="stat-sep" aria-hidden="true"></div>
       <div class="stat">
-        <div class="stat-value">$4.2B</div>
-        <div class="stat-label">Training data market</div>
+        <div class="stat-value">$3.5B+</div>
+        <div class="stat-label">Training data market (2025)</div>
       </div>
     </div>
 
@@ -112,59 +113,94 @@
   <!-- ── Divider ── -->
   <div class="divider" id="divider" role="separator" aria-hidden="true"></div>
 
-  <!-- ── Contact ── -->
+  <!-- ── Trust / Privacy ── -->
+  <section class="trust-section" id="trust" aria-labelledby="trust-title">
+    <div class="section-inner">
+      <p class="section-label">Privacy first</p>
+      <h2 class="section-title" id="trust-title">Your data stays yours.</h2>
+      <div class="trust-block">
+        <p class="trust-text">Your data is anonymized on-device before it ever leaves your machine. Torsen never sees your raw prompts or responses. You choose exactly what gets shared — and you can revoke access at any time.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Divider ── -->
+  <div class="divider divider-2" id="divider-2" role="separator" aria-hidden="true"></div>
+
+  <!-- ── Dual CTA ── -->
   <section class="contact-section" id="contact" aria-labelledby="contact-title">
 
-    <p class="section-label">Get in touch</p>
-    <h2 class="section-title" id="contact-title">Interested? Let us know.</h2>
+    <p class="section-label">Get started</p>
+    <h2 class="section-title" id="contact-title">Which side are you on?</h2>
 
-    <div class="contact-card">
-      <form class="contact-form" id="contact-form" action="https://formsubmit.co/40f30f23545c97424c41d32478386995" method="POST" novalidate aria-label="Contact form">
+    <div class="cta-grid">
 
-        <!-- FormSubmit config -->
-        <input type="hidden" name="_subject" value="[Torsen] New message from torsen.ai" />
-        <input type="hidden" name="_replyto" />
-        <input type="hidden" name="_captcha" value="true" />
-        <input type="hidden" name="_template" value="table" />
-        <!-- Honeypot -->
-        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+      <!-- Contributor path -->
+      <div class="contact-card">
+        <h3 class="cta-card-title">Earn from your data</h3>
+        <p class="cta-card-desc">You run AI locally and want to get paid for the data you already generate.</p>
+        <form class="contact-form" id="contributor-form" action="https://formsubmit.co/40f30f23545c97424c41d32478386995" method="POST" novalidate aria-label="Contributor signup form">
+          <input type="hidden" name="_subject" value="[Torsen] New contributor signup" />
+          <input type="hidden" name="_replyto" />
+          <input type="hidden" name="_captcha" value="true" />
+          <input type="hidden" name="_template" value="table" />
+          <input type="hidden" name="type" value="contributor" />
+          <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
 
-        <div class="field">
-          <label class="field-label" for="c-email">Email</label>
-          <input
-            class="field-input"
-            type="email"
-            id="c-email"
-            name="email"
-            placeholder="you@email.com"
-            required
-            autocomplete="email"
-          />
+          <div class="field">
+            <label class="field-label" for="contrib-email">Email</label>
+            <input class="field-input" type="email" id="contrib-email" name="email" placeholder="you@email.com" required autocomplete="email" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="contrib-tools">
+              Tools you use
+              <span class="opt">— optional</span>
+            </label>
+            <input class="field-input" type="text" id="contrib-tools" name="tools" placeholder="Ollama, LM Studio, Claude Code…" />
+          </div>
+
+          <button class="btn-submit" type="submit">Join as contributor</button>
+          <p class="form-error" id="contributor-error" role="alert" aria-live="assertive"></p>
+        </form>
+        <div class="form-success-msg" id="contributor-success" role="status" aria-live="polite">
+          You're in.<br />We'll reach out to <strong class="reply-addr"></strong> soon.
         </div>
-
-        <div class="field">
-          <label class="field-label" for="c-message">
-            Message
-            <span class="opt">— optional</span>
-          </label>
-          <textarea
-            class="field-textarea"
-            id="c-message"
-            name="message"
-            placeholder="Tell us what you're thinking…"
-            maxlength="2000"
-          ></textarea>
-        </div>
-
-        <button class="btn-submit" type="submit">Send message</button>
-
-        <p class="form-error" id="contact-error" role="alert" aria-live="assertive"></p>
-      </form>
-
-      <div class="form-success-msg" id="contact-success" role="status" aria-live="polite">
-        Message received.<br />
-        We'll get back to you at <strong id="reply-addr"></strong>.
       </div>
+
+      <!-- Buyer path -->
+      <div class="contact-card">
+        <h3 class="cta-card-title">Get training data</h3>
+        <p class="cta-card-desc">You're building AI models and need high-quality, real-world training data.</p>
+        <form class="contact-form" id="buyer-form" action="https://formsubmit.co/40f30f23545c97424c41d32478386995" method="POST" novalidate aria-label="Buyer inquiry form">
+          <input type="hidden" name="_subject" value="[Torsen] New buyer inquiry" />
+          <input type="hidden" name="_replyto" />
+          <input type="hidden" name="_captcha" value="true" />
+          <input type="hidden" name="_template" value="table" />
+          <input type="hidden" name="type" value="buyer" />
+          <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+
+          <div class="field">
+            <label class="field-label" for="buyer-email">Email</label>
+            <input class="field-input" type="email" id="buyer-email" name="email" placeholder="you@company.com" required autocomplete="email" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="buyer-need">
+              What data do you need?
+              <span class="opt">— optional</span>
+            </label>
+            <textarea class="field-textarea" id="buyer-need" name="data_need" placeholder="e.g. coding assistants, domain-specific Q&amp;A, multilingual…" maxlength="2000"></textarea>
+          </div>
+
+          <button class="btn-submit" type="submit">Talk to us</button>
+          <p class="form-error" id="buyer-error" role="alert" aria-live="assertive"></p>
+        </form>
+        <div class="form-success-msg" id="buyer-success" role="status" aria-live="polite">
+          Message received.<br />We'll get back to <strong class="reply-addr"></strong> shortly.
+        </div>
+      </div>
+
     </div>
 
   </section>
@@ -261,7 +297,7 @@
     });
   }, { threshold: 0.08 });
 
-  document.querySelectorAll('.divider, .contact-section')
+  document.querySelectorAll('.divider, .divider-2, .trust-section, .contact-section')
     .forEach(el => revealIO.observe(el));
 })();
 
@@ -350,13 +386,24 @@ function handleForm(formEl, successEl, opts) {
   });
 }
 
-// Contact form
+// Contributor form
 handleForm(
-  document.getElementById('contact-form'),
-  document.getElementById('contact-success'),
+  document.getElementById('contributor-form'),
+  document.getElementById('contributor-success'),
   {
     onSuccess: function (email) {
-      document.getElementById('reply-addr').textContent = email;
+      document.querySelector('#contributor-success .reply-addr').textContent = email;
+    }
+  }
+);
+
+// Buyer form
+handleForm(
+  document.getElementById('buyer-form'),
+  document.getElementById('buyer-success'),
+  {
+    onSuccess: function (email) {
+      document.querySelector('#buyer-success .reply-addr').textContent = email;
     }
   }
 );
