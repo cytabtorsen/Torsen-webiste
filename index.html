@@ -142,7 +142,7 @@
         <form class="contact-form" id="contributor-form" action="https://formsubmit.co/40f30f23545c97424c41d32478386995" method="POST" novalidate aria-label="Contributor signup form">
           <input type="hidden" name="_subject" value="[Torsen] New contributor signup" />
           <input type="hidden" name="_replyto" />
-          <input type="hidden" name="_captcha" value="true" />
+          <input type="hidden" name="_captcha" value="false" />
           <input type="hidden" name="_template" value="table" />
           <input type="hidden" name="type" value="contributor" />
           <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
@@ -175,7 +175,7 @@
         <form class="contact-form" id="buyer-form" action="https://formsubmit.co/40f30f23545c97424c41d32478386995" method="POST" novalidate aria-label="Buyer inquiry form">
           <input type="hidden" name="_subject" value="[Torsen] New buyer inquiry" />
           <input type="hidden" name="_replyto" />
-          <input type="hidden" name="_captcha" value="true" />
+          <input type="hidden" name="_captcha" value="false" />
           <input type="hidden" name="_template" value="table" />
           <input type="hidden" name="type" value="buyer" />
           <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
@@ -361,7 +361,7 @@ function handleForm(formEl, successEl, opts) {
 
       var data = await res.json().catch(function () { return {}; });
 
-      if (res.ok && data.success) {
+      if (res.ok && (data.success === true || data.success === 'true')) {
         lastSubmitTime = Date.now();
         this.style.display      = 'none';
         successEl.style.display = 'block';
