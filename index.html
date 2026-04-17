@@ -361,7 +361,7 @@ function handleForm(formEl, successEl, opts) {
 
       var data = await res.json().catch(function () { return {}; });
 
-      if (res.ok && (data.success === true || data.success === 'true')) {
+      if (res.ok) {
         lastSubmitTime = Date.now();
         this.style.display      = 'none';
         successEl.style.display = 'block';
