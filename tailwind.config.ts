@@ -55,11 +55,18 @@ const config: Config = {
           "0%, 100%": { opacity: "0.85", filter: "drop-shadow(0 0 6px rgba(255,180,84,0.35))" },
           "50%": { opacity: "1", filter: "drop-shadow(0 0 16px rgba(255,180,84,0.55))" },
         },
+        // The independent-record centerpiece: the sealed witness record slowly
+        // lifting away from the machine it records — independence, made literal.
+        "float-lift": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-14px)" },
+        },
       },
       animation: {
         "trace-draw": "trace-draw 2.4s ease-out forwards",
         "pulse-node": "pulse-node 3.2s ease-in-out infinite",
         "why-glow": "why-glow 4s ease-in-out infinite",
+        "float-lift": "float-lift 7s ease-in-out infinite",
       },
     },
   },

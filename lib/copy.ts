@@ -156,7 +156,7 @@ export const howItWorks = {
     {
       id: "detect",
       title: "Detect",
-      body: "Torsen finds the failure window — and treats a detector's alarm as a pointer to investigate, not the answer.",
+      body: "Torsen finds the failure window — and treats a detector’s alarm as a pointer to investigate, not the answer.",
       grounding:
         "A detector — /diagnostics, an e-stop, a FAIL-Detect-style monitor — is a red light: it flags that something went wrong, never why. Torsen takes the flag as a hypothesis and tests it against the camera + physical signals.",
     },
@@ -179,15 +179,75 @@ export const howItWorks = {
       title: "Record",
       body: "The reconstruction is kept as an independent, tamper-evident record — held apart from the machine that acted.",
       grounding:
-        "A witness, never an actor. The account of the failure isn't the failing system's own self-report — it's an independent record you can revisit, share, and stand behind.",
+        "A witness, never an actor. The account of the failure isn’t the failing system’s own self-report — it’s an independent record you can revisit, share, and stand behind.",
     },
   ],
   // Candid "what it doesn't do (yet)" — credibility feature for the ROS crowd
   // (brief §7.5). The AVOID words appear here, in negation, on purpose.
   limits: {
-    label: "What it doesn't do (yet)",
-    body: "Torsen is read-only. It never controls the robot, never prevents or fixes a failure, never touches the control loop. It explains what happened and records why — that's the whole job, on purpose.",
+    label: "What it doesn’t do (yet)",
+    body: "Torsen is read-only. It never controls the robot, never prevents or fixes a failure, never touches the control loop. It explains what happened and records why — that’s the whole job, on purpose.",
   },
+} as const;
+
+/**
+ * THE INDEPENDENT RECORD — act two (brief §4 item 5 · Phase 4b).
+ *
+ * The narrative pivot: broaden from "a debugging tool for learned-policy teams"
+ * to "the independent account of why, for any fleet that has to answer for what
+ * it did." Wedge sharp (learned policy, established above); vision wide.
+ *
+ * THE MOAT — this section's load-bearing idea: a system can't be the witness to
+ * its own failure. The only account today is the operator's own log — self-
+ * reported and mutable. Independence is the whitespace; it's also why Torsen must
+ * stay a witness (the moment it acts, the independence is gone).
+ *
+ * SCOPE GUARDRAIL (Phase 4b, per the user's decisions) — NO regulation (no EU
+ * Machinery Reg / AI Act / PLD, no dates, no "right to ship," no mandated-logging
+ * framing); NO downtime-cost $ figures and NO savings framing; NO insurance
+ * cost/discount claim; NO fabricated social proof (no logos, "trusted by," or
+ * invented metrics). Frame stakes QUALITATIVELY — accountability, trust, who
+ * answers for it.
+ *
+ * POSITIONING / HONESTY — witness, never actor (reads / reconstructs / records,
+ * never touches the control loop). The reader isn't blind; they already log. The
+ * gap is independence + the grounded why; this section is why that independence
+ * matters BEYOND the engineering team.
+ *
+ * STRUCTURAL INVARIANTS — components parse these:
+ *   - statement renders large/quiet (north-star register). If it contains the
+ *     word `why`, the component colours it with the amber `.why` device (as
+ *     Mission does) — keep exactly one `why` in it.
+ *   - beats[] is ordered; beats[0] (id "notary") is THE moat and takes the amber
+ *     lead in the ledger. Keep the order: notary → review → anyFleet → durable.
+ */
+export const independentRecord = {
+  eyebrow: "The independent record",
+  heading: "When someone outside the team asks what happened.",
+  statement:
+    "Sooner or later the question leaves engineering. A partner, a customer, a review after a near-miss — someone who wasn’t in the loop needs to know what the robot did and why. The account they can trust isn’t the one the robot kept on itself.",
+  beats: [
+    {
+      id: "notary",
+      title: "A system can’t be the witness to its own failure.",
+      body: "Today the only account of what went wrong is the operator’s own log — self-reported, and editable after the fact. The moment the account comes from the system that failed, it’s testimony, not evidence. Torsen’s record is held apart from the machine that acted, so the why doesn’t rest on taking the failing system’s word for it.",
+    },
+    {
+      id: "review",
+      title: "An answer that holds up outside the room.",
+      body: "Inside the team you trace a failure, retrain, and move on. But when the answer has to satisfy someone who wasn’t there — a partner reviewing an incident, a customer after a near-miss — “trust our logs” isn’t an answer. An independent, grounded reconstruction is: the same legible why, tied to camera and physical signals, that holds up to a reader who doesn’t own the robot.",
+    },
+    {
+      id: "anyFleet",
+      title: "Any fleet that has to answer for what it did.",
+      body: "A grounded, independent account of why isn’t particular to learned policies — that’s only where the gap bites first, because there’s no line to read. Any robot that has to explain itself to someone outside the team that built it needs more than its own word for what happened.",
+    },
+    {
+      id: "durable",
+      title: "A record that outlives the run.",
+      body: "Because it’s kept independently, the reconstruction doesn’t expire with the incident — it’s a replayable account you can revisit, compare against the next one, and stand behind long after the robot has moved on.",
+    },
+  ],
 } as const;
 
 export const audience = {
