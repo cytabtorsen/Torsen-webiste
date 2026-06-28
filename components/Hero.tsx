@@ -5,6 +5,7 @@ import {
   motion,
   useMotionValue,
   useReducedMotion,
+  useScroll,
   useSpring,
   useTransform,
 } from "framer-motion";
@@ -14,11 +15,9 @@ import { hero } from "@/lib/copy";
 
 /**
  * HERO MEDIA SEAM.
- * When your GPT Image 2 still + animated video are ready, drop them in
- * public/hero/ as hero-poster.jpg + hero-loop.mp4 (+ optional hero-loop.webm)
- * and flip HAS_HERO_MEDIA to true. The poster is the LCP; the video lazy-plays
- * on top; prefers-reduced-motion shows the poster only. The code-native visual
- * below is the interim backdrop AND stays available as the reduced-motion case.
+ * The poster is the LCP; the looping video lazy-plays on top after load.
+ * prefers-reduced-motion shows the poster only. The code-native visual below
+ * is the interim backdrop AND stays available as the reduced-motion fallback.
  */
 const HAS_HERO_MEDIA = true;
 const HAS_HERO_VIDEO = true; // public/hero/hero-loop.{webm,mp4} (seamless boomerang loop)
@@ -50,16 +49,31 @@ export function Hero() {
     };
   }, [reduce]);
 
-  // Subtle cursor parallax — the "one signature hero motion".
-  const mx = useMotionValue(0);
+  // ── Interaction: cursor parallax + a cursor-tracked "probe light". ──
+  const [probing, setProbing] = useState(false);
+  const mx = useMotionValue(0); // normalized -0.5..0.5
   const my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 60, damping: 18, mass: 0.6 });
   const sy = useSpring(my, { stiffness: 60, damping: 18, mass: 0.6 });
 
+  // Raw cursor position in px (for the probe light), spring-smoothed.
+  const lx = useMotionValue(-9999);
+  const ly = useMotionValue(-9999);
+  const probeX = useSpring(lx, { stiffness: 220, damping: 28, mass: 0.4 });
+  const probeY = useSpring(ly, { stiffness: 220, damping: 28, mass: 0.4 });
+
+  // Parallax: media drifts one way, the code-native trace/foreground the other.
+  const mediaX = useTransform(sx, [-0.5, 0.5], [20, -20]);
+  const mediaY = useTransform(sy, [-0.5, 0.5], [14, -14]);
   const glowX = useTransform(sx, [-0.5, 0.5], [24, -24]);
   const glowY = useTransform(sy, [-0.5, 0.5], [18, -18]);
   const traceX = useTransform(sx, [-0.5, 0.5], [-14, 14]);
   const traceY = useTransform(sy, [-0.5, 0.5], [-10, 10]);
+
+  // Scroll parallax: the scene sinks + zooms slightly as the hero scrolls away.
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const scrollY = useTransform(scrollYProgress, [0, 1], [0, 130]);
+  const scrollScale = useTransform(scrollYProgress, [0, 1], [1.06, 1.16]);
 
   function onMove(e: React.MouseEvent<HTMLDivElement>) {
     if (reduce) return;
@@ -67,43 +81,78 @@ export function Hero() {
     if (!r) return;
     mx.set((e.clientX - r.left) / r.width - 0.5);
     my.set((e.clientY - r.top) / r.height - 0.5);
+    lx.set(e.clientX - r.left);
+    ly.set(e.clientY - r.top);
+    if (!probing) setProbing(true);
   }
+
+  const interactive = HAS_HERO_MEDIA && !reduce;
 
   return (
     <section
       id="top"
       ref={ref}
       onMouseMove={onMove}
+      onMouseLeave={() => setProbing(false)}
       className="relative flex min-h-[100svh] items-center overflow-hidden pt-16"
     >
       {/* ── Backdrop layer (video seam OR code-native visual) ── */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         {HAS_HERO_MEDIA ? (
           <>
-            <picture>
-              <source srcSet={HERO_POSTER_WEBP} type="image/webp" />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={HERO_POSTER}
-                alt=""
-                fetchPriority="high"
-                className="absolute inset-0 h-full w-full object-cover object-[68%_center]"
-              />
-            </picture>
-            {HAS_HERO_VIDEO && !reduce && playVideo && (
-              <video
-                className="absolute inset-0 h-full w-full object-cover object-[68%_center]"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="none"
-                poster={HERO_POSTER}
+            {/* Parallax media: scroll layer (y + scale) wraps the cursor layer (x/y drift). */}
+            <motion.div
+              style={interactive ? { y: scrollY, scale: scrollScale } : undefined}
+              className="absolute inset-0"
+            >
+              <motion.div
+                style={interactive ? { x: mediaX, y: mediaY, scale: 1.08 } : undefined}
+                className="absolute inset-0"
               >
-                <source src={HERO_LOOP_WEBM} type="video/webm" />
-                <source src={HERO_LOOP_MP4} type="video/mp4" />
-              </video>
+                <picture>
+                  <source srcSet={HERO_POSTER_WEBP} type="image/webp" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={HERO_POSTER}
+                    alt=""
+                    fetchPriority="high"
+                    className="absolute inset-0 h-full w-full object-cover object-[68%_center]"
+                  />
+                </picture>
+                {HAS_HERO_VIDEO && !reduce && playVideo && (
+                  <video
+                    className="absolute inset-0 h-full w-full object-cover object-[68%_center]"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="none"
+                    poster={HERO_POSTER}
+                  >
+                    <source src={HERO_LOOP_WEBM} type="video/webm" />
+                    <source src={HERO_LOOP_MP4} type="video/mp4" />
+                  </video>
+                )}
+              </motion.div>
+            </motion.div>
+
+            {/* Cursor "probe light": brightens the scene where you point — as if
+                you're shining an investigative light to reconstruct the moment.
+                Sits BELOW the readability scrim so the headline stays legible. */}
+            {interactive && (
+              <motion.div
+                style={{ x: probeX, y: probeY }}
+                // Center the 560px glow on the cursor: framer's inline transform
+                // would otherwise drop Tailwind's -translate-1/2 centering, leaving
+                // the light ~280px off the pointer.
+                transformTemplate={({ x, y }) => `translate(-50%, -50%) translate(${x}, ${y})`}
+                className="absolute left-0 top-0 h-[560px] w-[560px] rounded-full mix-blend-plus-lighter transition-opacity duration-500"
+                animate={{ opacity: probing ? 1 : 0 }}
+              >
+                <div className="h-full w-full rounded-full bg-[radial-gradient(circle,rgba(255,180,84,0.20)_0%,rgba(22,199,154,0.10)_38%,transparent_68%)] blur-[6px]" />
+              </motion.div>
             )}
+
             {/* readability scrim: dark on the left for the headline, clearing to the
                 right so the humanoid + reconstruction trace stay visible */}
             <div className="absolute inset-0 bg-gradient-to-r from-ground via-ground/75 to-transparent" />
@@ -130,7 +179,7 @@ export function Hero() {
             initial={{ y: 16 }}
             animate={{ y: 0 }}
             transition={{ duration: 0.6, delay: 0.06 }}
-            className="mt-5 text-balance text-5xl font-semibold leading-[1.04] tracking-tight sm:text-6xl lg:text-7xl"
+            className="mt-5 text-balance font-display text-5xl font-semibold leading-[1.04] tracking-[-0.02em] sm:text-6xl lg:text-7xl"
           >
             <span className="why animate-why-glow">{hero.h1.whyWord}</span> {hero.h1.rest}
           </motion.h1>
@@ -154,6 +203,28 @@ export function Hero() {
           </motion.div>
         </div>
       </Container>
+
+      {/* quiet scroll cue — the page invites you down */}
+      {interactive && (
+        <motion.div
+          aria-hidden="true"
+          className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 md:block"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.5 }}
+          transition={{ delay: 1, duration: 0.8 }}
+        >
+          <motion.div
+            className="h-9 w-[22px] rounded-full border border-ink-faint/50"
+            initial={false}
+          >
+            <motion.span
+              className="mx-auto mt-1.5 block h-1.5 w-1.5 rounded-full bg-amber/80"
+              animate={{ y: [0, 9, 0], opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </motion.div>
+        </motion.div>
+      )}
     </section>
   );
 }

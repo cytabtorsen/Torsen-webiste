@@ -1,8 +1,25 @@
 import type { Metadata, Viewport } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/copy";
+
+/**
+ * Display face for headlines only (the "one custom type choice"): a geometric
+ * technical grotesque that rhymes with the mono labels and lifts the perceived
+ * tier without going editorial. Body + labels stay Geist. Self-hosted at build
+ * time (works with `output: export`); preloaded + size-adjusted fallback so it
+ * doesn't cost the headline LCP.
+ */
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  // Only the weights the headlines actually use: 500 (mission) + 600 (everything else).
+  weight: ["500", "600"],
+  display: "swap",
+  variable: "--font-space-grotesk",
+  preload: true,
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -51,7 +68,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${spaceGrotesk.variable}`}>
       <body className="bg-ground text-ink antialiased">{children}</body>
     </html>
   );

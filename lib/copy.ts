@@ -15,7 +15,7 @@ export const site = {
   domain: "torsen.ai",
   title: "Torsen — the independent black box for physical AI",
   description:
-    "Torsen is the independent black box for physical AI — it reconstructs the grounded “why” behind an autonomous failure, from physical ground truth, not guesswork.",
+    "Torsen is the independent black box for physical AI. It reconstructs the “why” behind an autonomous failure — from physical ground truth, not guesswork.",
   url: "https://torsen.ai",
 } as const;
 
@@ -23,7 +23,7 @@ export const hero = {
   eyebrow: "Independent reconstruction for physical AI",
   // H1 is split so the leading word can carry the amber "why" signature.
   h1: { whyWord: "Why", rest: "did the robot do that?" },
-  sub: "Torsen is the independent black box for physical AI — it reconstructs the grounded “why” behind an autonomous failure, from physical ground truth, not guesswork.",
+  sub: "Torsen is the independent black box for physical AI. It reconstructs the “why” behind an autonomous failure — from physical ground truth, not guesswork.",
   cta: "Request early access",
 } as const;
 
@@ -100,17 +100,39 @@ export const ctaSection = {
 
 export const nav = {
   links: [
-    { label: "Problem", href: "#problem" },
+    // Label matches the section eyebrow ("The bet") so the vocabulary is consistent.
+    { label: "The bet", href: "#problem" },
     { label: "What it does", href: "#what" },
     { label: "Difference", href: "#difference" },
     { label: "Mission", href: "#mission" },
   ],
   cta: "Request early access",
+  menuOpen: "Open menu",
+  menuClose: "Close menu",
 } as const;
 
 export const footer = {
-  tagline: "Built for the people who have to answer for the machine.",
-  copyright: `© ${"2026"} Torsen. All rights reserved.`,
+  // One-line company descriptor — legitimacy for enterprise engineers being asked
+  // to trust an "independent record". Guardrail-safe: witness / reconstruct / independent.
+  descriptor:
+    "The independent black box for physical AI — a witness layer that reconstructs why autonomous machines fail.",
+  contact: "cyrilletabe@torsen.ai",
+  contactHref: "mailto:cyrilletabe@torsen.ai",
+  privacyLabel: "Privacy",
+  privacyHref: "/privacy/",
+  copyright: "© 2026 Torsen. All rights reserved.",
+} as const;
+
+export const privacy = {
+  title: "Privacy",
+  updated: "Last updated June 2026.",
+  // Honest + minimal. Matches what the waitlist form actually does (Formspree).
+  body: [
+    "Torsen collects only the email address you submit to the early-access waitlist. We use it for one thing: to contact you when early access opens.",
+    "Submissions are handled by Formspree, our form provider, which processes the email on our behalf. We do not sell, rent, or share your address, and we send no marketing.",
+    "Want off the list? Email cyrilletabe@torsen.ai and we’ll delete your address.",
+  ],
+  back: "Back to torsen.ai",
 } as const;
 
 export const waitlist = {

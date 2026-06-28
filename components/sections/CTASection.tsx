@@ -7,7 +7,7 @@ export function CTASection() {
   return (
     <Section
       id="early-access"
-      className="relative overflow-hidden border-t border-ground-line py-32 sm:py-44"
+      className="relative overflow-hidden border-t border-ground-line py-36 sm:py-52"
     >
       <div className="pointer-events-none absolute inset-0 grid-bg opacity-50" aria-hidden />
       <div
@@ -15,7 +15,7 @@ export function CTASection() {
         aria-hidden
       />
       <Container className="relative flex flex-col items-center text-center">
-        <h2 className="max-w-2xl text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+        <h2 className="max-w-2xl text-balance font-display text-[2rem] font-semibold tracking-tight sm:text-[2.75rem]">
           {ctaSection.heading}
         </h2>
         <p className="mt-4 max-w-xl text-lg text-ink-dim">{ctaSection.sub}</p>

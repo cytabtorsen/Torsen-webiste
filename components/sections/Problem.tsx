@@ -1,4 +1,5 @@
 import { Section, Container } from "@/components/Section";
+import { ReconstructionPanel } from "@/components/ReconstructionPanel";
 import { problem } from "@/lib/copy";
 
 /**
@@ -36,16 +37,16 @@ export function Problem() {
   ];
 
   return (
-    <Section id="problem" className="border-t border-ground-line py-24 sm:py-32">
+    <Section id="problem" className="border-t border-ground-line py-28 sm:py-40">
       <Container>
         <p className="eyebrow">{problem.eyebrow}</p>
-        <h2 className="mt-5 max-w-3xl text-balance text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+        <h2 className="mt-6 max-w-3xl text-balance font-display text-[2rem] font-semibold leading-[1.1] tracking-tight sm:text-[2.5rem]">
           {problem.heading}
         </h2>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-dim">{problem.body}</p>
 
         {/* Two-panel contrast: noise (left) resolves into clarity (right). */}
-        <div className="mt-12 grid gap-5 sm:mt-14 md:grid-cols-2">
+        <div className="mt-14 grid gap-5 sm:mt-16 md:grid-cols-2">
           {/* ── LEFT: the log haystack ── */}
           <figure className="relative overflow-hidden rounded-xl border border-ground-line bg-ground-raised">
             <figcaption className="flex items-center justify-between border-b border-ground-line px-5 py-3">
@@ -77,79 +78,8 @@ export function Problem() {
             </div>
           </figure>
 
-          {/* ── RIGHT: one reconstructed moment ── */}
-          <figure className="relative overflow-hidden rounded-xl border border-ground-line bg-ground-raised shadow-glow-teal transition-colors duration-300 hover:border-teal/40">
-            <figcaption className="flex items-center justify-between border-b border-ground-line px-5 py-3">
-              <span className="eyebrow text-teal/80">{problem.panels.reconLabel}</span>
-              <span className="font-mono text-[11px] text-ink-dim">{problem.panels.reconState}</span>
-            </figcaption>
-
-            <div className="relative h-72">
-              {/* faint blueprint grid, masked — echoes the hero backdrop */}
-              <div className="absolute inset-0 grid-bg opacity-50" aria-hidden="true" />
-
-              {/* ambient amber + teal glow, very restrained */}
-              <div
-                className="pointer-events-none absolute right-[10%] top-[18%] h-40 w-40 rounded-full bg-amber/12 blur-[80px]"
-                aria-hidden="true"
-              />
-              <div
-                className="pointer-events-none absolute right-[8%] top-[12%] h-28 w-28 rounded-full bg-teal/10 blur-[70px]"
-                aria-hidden="true"
-              />
-
-              {/* The single reconstructed motion-path: amber trace -> teal grounded node. */}
-              <svg
-                className="absolute inset-0 h-full w-full"
-                viewBox="0 0 480 288"
-                fill="none"
-                preserveAspectRatio="xMidYMid meet"
-                aria-hidden="true"
-              >
-                {/* soft halo under the trace */}
-                <path
-                  d="M70 232 C 150 210, 176 132, 250 116 S 372 96, 410 66"
-                  stroke="#FFB454"
-                  strokeOpacity={0.16}
-                  strokeWidth={8}
-                  strokeLinecap="round"
-                  fill="none"
-                />
-                {/* the grounded reconstructed trajectory (amber, draws in once) */}
-                <path
-                  d="M70 232 C 150 210, 176 132, 250 116 S 372 96, 410 66"
-                  stroke="#FFB454"
-                  strokeWidth={2.25}
-                  strokeLinecap="round"
-                  pathLength={1}
-                  strokeDasharray={1}
-                  className="animate-trace-draw"
-                  style={{ "--trace-len": 1 } as React.CSSProperties}
-                />
-
-                {/* origin marker — faint amber start of the reconstruction */}
-                <circle cx={70} cy={232} r={3} fill="#FFB454" fillOpacity={0.55} />
-
-                {/* teal grounded node where the moment resolves */}
-                <circle
-                  cx={410}
-                  cy={66}
-                  r={5}
-                  fill="#16C79A"
-                  className="animate-pulse-node"
-                  style={{ transformOrigin: "410px 66px" }}
-                />
-                <circle cx={410} cy={66} r={11} fill="none" stroke="#16C79A" strokeOpacity={0.3} strokeWidth={1.5} />
-                <circle cx={410} cy={66} r={18} fill="none" stroke="#16C79A" strokeOpacity={0.12} strokeWidth={1.5} />
-              </svg>
-
-              {/* the answer, named — the signature amber "why" */}
-              <div className="absolute bottom-4 left-5 font-mono text-[11px] text-ink-dim">
-                <span className="why">why</span>
-                <span className="text-ink-dim">{problem.panels.captionAfter}</span>
-              </div>
-            </div>
-          </figure>
+          {/* ── RIGHT: one reconstructed moment (interactive: draws on view, replays on hover) ── */}
+          <ReconstructionPanel />
         </div>
       </Container>
     </Section>

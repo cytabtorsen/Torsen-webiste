@@ -82,30 +82,38 @@ const glyphs: Record<string, ReactNode> = {
 
 export function WhatItDoes() {
   return (
-    <Section id="what" className="border-t border-ground-line py-24 sm:py-32">
+    <Section id="what" className="border-t border-ground-line py-28 sm:py-40">
       <Container>
         <p className="eyebrow">{whatItDoes.eyebrow}</p>
-        <h2 className="mt-5 max-w-3xl text-balance text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+        <h2 className="mt-6 max-w-3xl text-balance font-display text-[2rem] font-semibold leading-[1.1] tracking-tight sm:text-[2.5rem]">
           {whatItDoes.heading}
         </h2>
 
-        <ul className="mt-12 grid gap-5 sm:mt-14 md:grid-cols-3">
+        <ul className="mt-14 grid gap-5 sm:mt-16 md:grid-cols-3">
           {whatItDoes.cards.map((card) => {
             const isWitness = card.id === "independent";
             return (
               <li
                 key={card.id}
                 className={[
-                  "group rounded-xl border bg-ground-raised p-6 sm:p-7",
-                  "transition duration-300 ease-out hover:-translate-y-0.5",
+                  "group relative overflow-hidden rounded-xl border bg-ground-raised p-6 sm:p-7",
+                  "transition duration-300 ease-out hover:-translate-y-1",
                   isWitness
-                    ? "border-amber/25 hover:border-amber/50"
-                    : "border-ground-line hover:border-teal/50",
+                    ? "border-amber/25 hover:border-amber/50 hover:shadow-glow"
+                    : "border-ground-line hover:border-teal/50 hover:shadow-glow-teal",
                 ].join(" ")}
               >
+                {/* hover sheen — a faint accent wash that fades in from the glyph corner */}
+                <span
+                  aria-hidden="true"
+                  className={[
+                    "pointer-events-none absolute -left-8 -top-8 h-28 w-28 rounded-full opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100",
+                    isWitness ? "bg-amber/15" : "bg-teal/12",
+                  ].join(" ")}
+                />
                 <span
                   className={[
-                    "inline-flex transition-colors duration-300",
+                    "relative inline-flex transition-transform duration-300 ease-out group-hover:scale-110",
                     isWitness
                       ? "text-amber/90 group-hover:text-amber"
                       : "text-teal/90 group-hover:text-teal",

@@ -44,14 +44,14 @@ export function Difference() {
   const rows = [leadRow, ...difference.rows.filter((_, i) => i !== 1)];
 
   return (
-    <Section id="difference" className="border-t border-ground-line py-24 sm:py-32">
+    <Section id="difference" className="border-t border-ground-line py-28 sm:py-40">
       <Container>
         <p className="eyebrow">{difference.eyebrow}</p>
-        <h2 className="mt-5 max-w-3xl text-balance text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+        <h2 className="mt-6 max-w-3xl text-balance font-display text-[2rem] font-semibold leading-[1.1] tracking-tight sm:text-[2.5rem]">
           {difference.heading}
         </h2>
 
-        <div className="mt-12 overflow-hidden rounded-xl border border-ground-line bg-ground-raised sm:mt-14">
+        <div className="mt-14 overflow-hidden rounded-xl border border-ground-line bg-ground-raised sm:mt-16">
           <table className="w-full table-fixed border-collapse text-left">
             <caption className="sr-only">{difference.caption}</caption>
             <thead>
@@ -77,8 +77,8 @@ export function Difference() {
                   <tr
                     key={row.us}
                     className={[
-                      "border-t border-ground-line align-top",
-                      lead ? "bg-amber/[0.04]" : "transition-colors duration-300 hover:bg-ground/40",
+                      "group border-t border-ground-line align-top transition-colors duration-300",
+                      lead ? "bg-amber/[0.04] hover:bg-amber/[0.07]" : "hover:bg-ground/40",
                     ].join(" ")}
                   >
                     <td
@@ -91,7 +91,12 @@ export function Difference() {
                     </td>
                     <td className="px-4 py-6 sm:px-7">
                       <div className="flex items-start gap-2.5">
-                        <span className={lead ? "text-amber/90" : "text-teal/90"}>
+                        <span
+                          className={[
+                            "inline-flex transition-transform duration-300 ease-out group-hover:scale-125",
+                            lead ? "text-amber/90" : "text-teal/90",
+                          ].join(" ")}
+                        >
                           <Tick />
                         </span>
                         <p className="text-[15px] font-medium leading-relaxed text-ink">{row.us}</p>

@@ -29,13 +29,13 @@ export function Audience() {
   const [bodyBefore, bodyAfter] = audience.body.split(quoted);
 
   return (
-    <Section id="audience" className="border-t border-ground-line py-24 sm:py-32">
+    <Section id="audience" className="border-t border-ground-line py-28 sm:py-40">
       <Container>
         <div className="grid gap-x-12 gap-y-10 md:grid-cols-12">
           {/* ── Left: the claim ── */}
           <div className="md:col-span-6 lg:col-span-5">
             <p className="eyebrow">{audience.eyebrow}</p>
-            <h2 className="mt-5 text-balance text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+            <h2 className="mt-6 text-balance font-display text-[2rem] font-semibold leading-[1.1] tracking-tight sm:text-[2.5rem]">
               {audience.heading}
             </h2>
           </div>

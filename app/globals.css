@@ -10,6 +10,8 @@
 
   html {
     scroll-behavior: smooth;
+    /* Anchor targets clear the fixed 64px nav instead of hiding under it. */
+    scroll-padding-top: 5rem;
     -webkit-text-size-adjust: 100%;
   }
 
@@ -44,8 +46,11 @@
 }
 
 @layer components {
-  /* The signature brand device: the word "why" in glowing amber. */
+  /* The signature brand device: the word "why" in glowing amber. Pinned to the
+     body sans so its true italic stays crisp even inside the display-face
+     headlines (the display grotesque has no italic, so it would synthesize). */
   .why {
+    font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
     color: #ffb454;
     font-style: italic;
     text-shadow:

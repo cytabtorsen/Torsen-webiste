@@ -32,6 +32,8 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
         mono: ["var(--font-geist-mono)", "ui-monospace", "monospace"],
+        // Headlines only — the one display face. Falls back to the body sans.
+        display: ["var(--font-space-grotesk)", "var(--font-geist-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
       },
       maxWidth: {
         content: "72rem", // shared page gutter width

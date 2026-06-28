@@ -86,7 +86,7 @@ export function WaitlistForm({ variant = "hero" }: { variant?: "hero" | "footer"
         <button
           type="submit"
           disabled={busy || done}
-          className="focus-ring-amber h-12 shrink-0 rounded-lg bg-amber px-5 text-[15px] font-semibold text-ground shadow-glow transition-[transform,opacity] hover:-translate-y-px active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-70"
+          className="focus-ring-amber h-12 shrink-0 rounded-lg bg-amber px-5 text-[15px] font-semibold text-ground shadow-glow transition-[transform,box-shadow,filter,opacity] duration-200 hover:-translate-y-px hover:shadow-[0_0_48px_-6px_rgba(255,180,84,0.6)] hover:brightness-105 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-70"
         >
           {busy ? waitlist.sending : done ? waitlist.requested : waitlist.cta}
         </button>
