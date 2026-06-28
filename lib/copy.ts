@@ -261,10 +261,71 @@ export const audience = {
   rolesLabel: "The people Torsen is built for",
 } as const;
 
+/**
+ * WHERE THIS GOES — the vision closer (brief §4 item 7 · Phase 4c).
+ *
+ * `line` is the north-star — keep it large, quiet, and FIRST. INVARIANT: it must
+ * contain the lowercase word `why` (Mission splits on it for the amber `.why`
+ * device). Do not edit the line. Two beats render beneath it:
+ *   - spatialLadder: the SAME replayable spatial reconstruction, on more lenses
+ *     over time. Screen today → tablet → glasses LATER. AR is the final rung and
+ *     a FUTURE lens — never "AR beats screens," never a better truth. rungs is
+ *     ordered present → near → future (length 3); the component dims the last.
+ *   - corpus: the failure-corpus teaser. GUARDRAIL — understanding/legibility
+ *     compounds, NOT prevention. Never "prevent / fix / avoid future failures."
+ */
 export const mission = {
   eyebrow: "Where this goes",
   // North-star line. Keep large and quiet. INVARIANT: must contain lowercase "why".
   line: "Learned policies are becoming how every complex robot is built — and how they fail. Torsen is the independent record of why, for as long as they run.",
+  spatialLadder: {
+    label: "The same reconstruction, on more lenses over time",
+    rungs: [
+      "On your screen today — scrub and orbit the failure in place.",
+      "On a tablet held up to the robot, the reconstruction anchored where it stood.",
+      "Hands-free on glasses, later — standing inside the same grounded record, not a better truth.",
+    ],
+  },
+  corpus:
+    "Every grounded reconstruction is held independently — so they accumulate. Across a fleet, and one day across sites, that record compounds into a shared, legible account of how learned policies fail: the same kind of failure, recognized across runs, in language a reader who didn’t own the robot can follow.",
+} as const;
+
+/**
+ * CREDIBILITY — pre-product proof, zero logos (brief §7.2 + §7.3 · Phase 4c).
+ *
+ *   - groundedStance: the trust posture (§7.2). DEEPENS the whatItDoes "ground"
+ *     card without repeating it — that card explains the mechanic; this makes it
+ *     a discipline Torsen holds (and one the failing system can't hold about
+ *     itself). The brief phrase "100% grounded" is allowed here as the stamp.
+ *   - funded: EXTERNAL market validation (§7.3). These dollars belong to OTHER
+ *     companies / the category — NEVER implied Torsen traction, NEVER ROI/savings.
+ *     The ONLY dollars on the public site. Attributions stay conservative
+ *     (amount + name); `caveat` flags that figures cite public reporting and that
+ *     the companies named are the surrounding category, not partners/customers.
+ *
+ * Scarcity is NOT here — it already lives at ctaSection.sub / pilotForm.nextStep.
+ * Reads FACTUAL, not boastful. figures.length === 3; render as a quiet stat strip
+ * (ink values + teal "grounded" accent — amber stays reserved for the "why").
+ */
+export const credibility = {
+  eyebrow: "Why trust this",
+  groundedStance: {
+    stamp: "100% grounded",
+    title: "We don’t take the policy’s word for it. We don’t ask you to take ours.",
+    body: "It’s a discipline, not a feature: nothing Torsen says about a failure stands on its own authority. A policy’s explanation and a detector’s alarm are hypotheses — useful pointers, never proof. The account holds only because every line of it is pinned to a camera or physical signal a reader can pull up and check — the posture an independent witness has to keep, and the one the failing system can’t keep about itself.",
+  },
+  funded: {
+    label: "The category is funded",
+    framing:
+      "Serious capital is already validating every layer next door — the data layer, the replay layer, the observability layer. The independent, spatial, agent-curated record of why is the box still open.",
+    figures: [
+      { value: "$40M", label: "Foxglove", sub: "robotics observability" },
+      { value: "$17M", label: "Rerun", sub: "the open data layer for physical AI" },
+      { value: "~$23B", label: "physical AI", sub: "the field these robots ship in" },
+    ],
+    caveat:
+      "Figures reference public reporting on other companies and the wider category — not Torsen’s own funding, traction, partners, or customers.",
+  },
 } as const;
 
 export const ctaSection = {

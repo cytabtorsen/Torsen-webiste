@@ -57,6 +57,37 @@ export function Mission() {
           <span className="why">why</span>
           {after}
         </p>
+
+        {/* ── the coda: the spatial vision ladder + the failure-corpus teaser ── */}
+        <div
+          aria-hidden="true"
+          className="mt-16 h-px w-full max-w-4xl bg-gradient-to-r from-ground-line to-transparent"
+        />
+        <p className="mt-10 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-faint">
+          {mission.spatialLadder.label}
+        </p>
+        <ol className="mt-6 grid max-w-4xl gap-8 sm:grid-cols-3 sm:gap-6">
+          {mission.spatialLadder.rungs.map((rung, i) => {
+            const isFuture = i === mission.spatialLadder.rungs.length - 1;
+            return (
+              <li key={rung}>
+                <span
+                  className={[
+                    "font-mono text-[11px] tabular-nums",
+                    isFuture ? "text-ink-faint" : "text-teal/70",
+                  ].join(" ")}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <p className="mt-2 text-[15px] leading-snug text-ink-dim">{rung}</p>
+              </li>
+            );
+          })}
+        </ol>
+        <p className="mt-14 flex max-w-2xl gap-3 text-[15px] leading-relaxed text-ink-dim sm:mt-16">
+          <span aria-hidden="true" className="mt-2 h-1 w-1 shrink-0 rounded-full bg-teal/60" />
+          <span>{mission.corpus}</span>
+        </p>
       </Container>
     </Section>
   );

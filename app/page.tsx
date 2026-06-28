@@ -9,6 +9,7 @@ import { Difference } from "@/components/sections/Difference";
 import { HowItWorks } from "@/components/sections/HowItWorks";
 import { IndependentRecord } from "@/components/sections/IndependentRecord";
 import { Audience } from "@/components/sections/Audience";
+import { Credibility } from "@/components/sections/Credibility";
 import { Mission } from "@/components/sections/Mission";
 import { CTASection } from "@/components/sections/CTASection";
 
@@ -32,6 +33,7 @@ export default function Home() {
         <HowItWorks />
         <IndependentRecord />
         <Audience />
+        <Credibility />
         <Mission />
         <CTASection />
       </main>
