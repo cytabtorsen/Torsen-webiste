@@ -9,9 +9,8 @@ export function CTASection() {
       id="early-access"
       className="relative overflow-hidden border-t border-ground-line py-36 sm:py-52"
     >
-      <div className="pointer-events-none absolute inset-0 grid-bg opacity-50" aria-hidden />
       <div
-        className="pointer-events-none absolute left-1/2 top-1/2 h-[26rem] w-[26rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber/10 blur-[120px]"
+        className="pointer-events-none absolute left-1/2 top-1/2 h-[30rem] w-[30rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-amber/[0.11] blur-[130px]"
         aria-hidden
       />
       <Container className="relative flex flex-col items-center text-center">

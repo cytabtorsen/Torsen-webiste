@@ -25,11 +25,11 @@ export function Section({
   const MotionTag = motion[as];
 
   const variants: Variants = {
-    hidden: { opacity: 0, y: reduce ? 0 : 24 },
+    hidden: { opacity: 0, y: reduce ? 0 : 28 },
     show: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.32, ease: [0.21, 0.5, 0.31, 1] },
+      transition: { duration: 0.5, ease: [0.21, 0.5, 0.31, 1] },
     },
   };
 

@@ -79,15 +79,25 @@
     color: #5c6677;
   }
 
-  /* Faint blueprint grid used behind dark sections. */
-  .grid-bg {
-    background-image:
-      linear-gradient(to right, rgba(27, 34, 48, 0.55) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(27, 34, 48, 0.55) 1px, transparent 1px);
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 35%, transparent 100%);
-    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 35%, transparent 100%);
-  }
+}
+
+/* Lenis smooth-scroll runtime classes (added to <html> when active). When Lenis
+   is off (reduced-motion), native smooth scroll + scroll-padding apply instead. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
 }
 
 @layer utilities {

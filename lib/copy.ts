@@ -28,7 +28,7 @@ export const hero = {
 } as const;
 
 export const problem = {
-  eyebrow: "The bet",
+  eyebrow: "The problem",
   heading: "As robots leave the human loop, the answer to why disappears.",
   body: "Autonomy removes the human who used to explain what happened. The machine keeps acting; the answer to “why” disappears. Logs show what was recorded — not why the policy chose it.",
   panels: {
@@ -100,8 +100,8 @@ export const ctaSection = {
 
 export const nav = {
   links: [
-    // Label matches the section eyebrow ("The bet") so the vocabulary is consistent.
-    { label: "The bet", href: "#problem" },
+    // Label matches the section eyebrow ("The problem") so the vocabulary is consistent.
+    { label: "The problem", href: "#problem" },
     { label: "What it does", href: "#what" },
     { label: "Difference", href: "#difference" },
     { label: "Mission", href: "#mission" },

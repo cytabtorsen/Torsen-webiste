@@ -3,6 +3,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Space_Grotesk } from "next/font/google";
 import "./globals.css";
+import { SmoothScroll } from "@/components/SmoothScroll";
 import { site } from "@/lib/copy";
 
 /**
@@ -69,7 +70,10 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable} ${spaceGrotesk.variable}`}>
-      <body className="bg-ground text-ink antialiased">{children}</body>
+      <body className="bg-ground text-ink antialiased">
+        <SmoothScroll />
+        {children}
+      </body>
     </html>
   );
 }

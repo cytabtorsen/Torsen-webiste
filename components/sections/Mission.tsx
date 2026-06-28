@@ -40,8 +40,6 @@ export function Mission() {
       className="relative overflow-hidden border-t border-ground-line py-36 sm:py-52"
     >
       <div ref={ref} onMouseMove={onMove} className="absolute inset-0" aria-hidden="true">
-        {/* very restrained ambient backdrop */}
-        <div className="pointer-events-none absolute inset-0 grid-bg opacity-30" />
         {/* amber glow that tracks the cursor (or stays centered for reduced-motion) */}
         <motion.div
           style={reduce ? undefined : { x: glowX, y: glowY }}

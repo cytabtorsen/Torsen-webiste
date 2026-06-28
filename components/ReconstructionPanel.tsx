@@ -44,9 +44,6 @@ export function ReconstructionPanel() {
       </figcaption>
 
       <div className="relative h-72">
-        {/* faint blueprint grid, masked — echoes the hero backdrop */}
-        <div className="absolute inset-0 grid-bg opacity-50" aria-hidden="true" />
-
         {/* ambient amber + teal glow; intensifies a touch on hover */}
         <div
           className="pointer-events-none absolute right-[10%] top-[18%] h-40 w-40 rounded-full bg-amber/12 blur-[80px] transition-opacity duration-500 group-hover:opacity-70"

@@ -244,8 +244,6 @@ function CodeNativeBackdrop({
 }) {
   return (
     <>
-      <div className="absolute inset-0 grid-bg opacity-70" />
-
       {/* amber "why" glow, parallaxed */}
       <motion.div
         style={reduce ? undefined : { x: glowX, y: glowY }}
