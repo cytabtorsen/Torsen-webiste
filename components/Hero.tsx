@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useMotionValue,
@@ -20,14 +20,35 @@ import { hero } from "@/lib/copy";
  * on top; prefers-reduced-motion shows the poster only. The code-native visual
  * below is the interim backdrop AND stays available as the reduced-motion case.
  */
-const HAS_HERO_MEDIA = false;
+const HAS_HERO_MEDIA = true;
+const HAS_HERO_VIDEO = true; // public/hero/hero-loop.{webm,mp4} (seamless boomerang loop)
 const HERO_POSTER = "/hero/hero-poster.jpg";
+const HERO_POSTER_WEBP = "/hero/hero-poster.webp";
 const HERO_LOOP_MP4 = "/hero/hero-loop.mp4";
 const HERO_LOOP_WEBM = "/hero/hero-loop.webm";
 
 export function Hero() {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLDivElement>(null);
+
+  // Defer the hero video until AFTER first load so it never competes with the
+  // LCP (the poster stays the backdrop until then). Skip it on data-saver / 2G.
+  const [playVideo, setPlayVideo] = useState(false);
+  useEffect(() => {
+    if (!HAS_HERO_VIDEO || reduce) return;
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } }).connection;
+    if (conn?.saveData || (conn?.effectiveType && conn.effectiveType.includes("2g"))) return;
+    let t: ReturnType<typeof setTimeout>;
+    const start = () => {
+      t = setTimeout(() => setPlayVideo(true), 600);
+    };
+    if (document.readyState === "complete") start();
+    else window.addEventListener("load", start, { once: true });
+    return () => {
+      clearTimeout(t);
+      window.removeEventListener("load", start);
+    };
+  }, [reduce]);
 
   // Subtle cursor parallax — the "one signature hero motion".
   const mx = useMotionValue(0);
@@ -59,11 +80,19 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         {HAS_HERO_MEDIA ? (
           <>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={HERO_POSTER} alt="" className="absolute inset-0 h-full w-full object-cover" />
-            {!reduce && (
+            <picture>
+              <source srcSet={HERO_POSTER_WEBP} type="image/webp" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={HERO_POSTER}
+                alt=""
+                fetchPriority="high"
+                className="absolute inset-0 h-full w-full object-cover object-[68%_center]"
+              />
+            </picture>
+            {HAS_HERO_VIDEO && !reduce && playVideo && (
               <video
-                className="absolute inset-0 h-full w-full object-cover"
+                className="absolute inset-0 h-full w-full object-cover object-[68%_center]"
                 autoPlay
                 muted
                 loop
@@ -75,7 +104,10 @@ export function Hero() {
                 <source src={HERO_LOOP_MP4} type="video/mp4" />
               </video>
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-ground via-ground/70 to-ground/30" />
+            {/* readability scrim: dark on the left for the headline, clearing to the
+                right so the humanoid + reconstruction trace stay visible */}
+            <div className="absolute inset-0 bg-gradient-to-r from-ground via-ground/75 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ground to-transparent" />
           </>
         ) : (
           <CodeNativeBackdrop glowX={glowX} glowY={glowY} traceX={traceX} traceY={traceY} reduce={!!reduce} />
@@ -86,8 +118,8 @@ export function Hero() {
       <Container className="relative z-10">
         <div className="max-w-2xl">
           <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ y: 12 }}
+            animate={{ y: 0 }}
             transition={{ duration: 0.5 }}
             className="eyebrow"
           >
@@ -95,8 +127,8 @@ export function Hero() {
           </motion.p>
 
           <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ y: 16 }}
+            animate={{ y: 0 }}
             transition={{ duration: 0.6, delay: 0.06 }}
             className="mt-5 text-balance text-5xl font-semibold leading-[1.04] tracking-tight sm:text-6xl lg:text-7xl"
           >
@@ -104,8 +136,8 @@ export function Hero() {
           </motion.h1>
 
           <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ y: 16 }}
+            animate={{ y: 0 }}
             transition={{ duration: 0.6, delay: 0.14 }}
             className="mt-6 max-w-xl text-lg leading-relaxed text-ink-dim"
           >
@@ -113,8 +145,8 @@ export function Hero() {
           </motion.p>
 
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ y: 16 }}
+            animate={{ y: 0 }}
             transition={{ duration: 0.6, delay: 0.22 }}
             className="mt-9"
           >

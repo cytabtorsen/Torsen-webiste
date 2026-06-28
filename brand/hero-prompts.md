@@ -22,8 +22,8 @@ Generate at **1536×1024 (landscape 3:2)**, crop-safe for a 16:9 web hero.
   "type": "Full-bleed website hero background (NO text)",
   "goal": "Cinematic backdrop for torsen.ai hero. Headline + CTA are overlaid in code on the LEFT, so keep the left ~40% dark and uncluttered; the subject is on the RIGHT.",
   "aspect_ratio": "3:2 landscape (1536x1024), composed crop-safe for 16:9",
-  "subject": "a single autonomous industrial robot arm frozen mid-failure / mid-misstep in a dark, high-end factory cell, cinematic close-up on the RIGHT of the frame",
-  "signature_element": "one continuous glowing amber (#FFB454) data-trace line reconstructing the arm's motion path through the air, ending in a small precise teal (#16C79A) grounded node — thin, elegant, instrument-like, NOT a neon scribble",
+  "subject": "a single advanced humanoid robot frozen at the moment of failure, mid-way through a complex manipulation task (e.g. handling/placing an object that is slipping or being dropped), in a real un-caged industrial or lab environment; cinematic medium close-up on the RIGHT of the frame; a grounded, believable engineering prototype — NOT a glossy consumer sci-fi character",
+  "signature_element": "one continuous glowing amber (#FFB454) data-trace line reconstructing the humanoid's motion — the path of its hand/arm and the mishandled object's trajectory through the air — ending in a small precise teal (#16C79A) grounded node — thin, elegant, instrument-like, NOT a neon scribble",
   "composition": {
     "subject_position": "right 55-60% of frame",
     "negative_space": "left ~40% is deep near-empty shadow for an overlaid headline — no important detail there",
@@ -35,7 +35,7 @@ Generate at **1536×1024 (landscape 3:2)**, crop-safe for a 16:9 web hero.
   "camera": "full-frame cinematic, 35-50mm, slight low angle, subtle film grain",
   "constraints": {
     "must": ["NO text/letters/numbers/logos/watermarks/UI", "keep left ~40% dark and simple", "single uncluttered hero subject", "photoreal / high-end CGI realism"],
-    "avoid": ["bright clean startup look", "purple-pink gradients", "neon cyberpunk overload", "busy background", "multiple robots", "flares washing out the left", "any baked-in caption"]
+    "avoid": ["bright clean startup look", "purple-pink gradients", "neon cyberpunk overload or glossy consumer sci-fi / hype render", "a caged fixed industrial robotic arm", "glamour face close-up of the humanoid", "busy background", "multiple robots", "flares washing out the left", "any baked-in caption"]
   },
   "quality": "ultra-detailed, 4k, cinematic color grade"
 }
@@ -50,9 +50,12 @@ Save the result as `public/hero/hero-poster.jpg` (also export a high-res copy).
 Feed the still above as the init image. Settings: **~6s, seamless loop, muted, landscape/16:9**, export MP4 (H.264) + WebM if available.
 
 ```
-Animate this still into a slow, premium ~6-second ambient LOOP. Hold the composition exactly; do not change layout, do not add text or UI.
-Motion: a very subtle slow camera push-in (3-4%) toward the robot arm; volumetric haze drifts gently; the cool teal rim light shimmers faintly; the amber data-trace energizes/“draws” along its path and the teal grounded node pulses softly once. The robot arm stays almost still — at most a tense micro-tremor (it is frozen mid-failure, not operating).
-Mood: calm, forensic, cinematic, restrained. No people, no new objects, no camera shake, no text. Seamless loop. Keep the left ~40% dark and empty.
+Animate this exact still into a slow, premium ~6-second ambient LOOP that "plays" the reconstruction. Use the image as-is; hold the composition and framing; add no text, UI, people, or new objects.
+Frozen evidence: the humanoid stays locked in its just-dropped, bent-forward pose and the dark crate stays frozen mid-air (it is evidence, not live physics) — allow only a tense micro-tremor / faint servo vibration in the robot and an almost imperceptible drift of the crate.
+The reconstruction: the glowing amber data-trace draws / energizes along its arc from the robot's hand down to the teal grounded node on the floor — a soft pulse of light travels the curve once — and the teal node pulses gently one or two times.
+Atmosphere: LOCKED-OFF camera — do NOT push in, zoom, pan or dolly (a moving camera cannot loop and is the #1 thing that breaks the loop). Only in-scene ambience moves: volumetric warehouse haze drifts gently, the cool blue background work-lights and the teal rim light on the chassis shimmer faintly.
+Mood: calm, forensic, cinematic, restrained. No camera motion, no camera shake, no large motion, no relighting. Make the motion cyclic and seamless — the last frame should match the first. Muted. Keep the left ~40% dark and empty for the headline.
+(Note: the site also boomerangs the clip — plays it forward then reversed — so subtle, ambient, locked-camera motion loops best.)
 ```
 
 Save as `public/hero/hero-loop.mp4` (+ optional `hero-loop.webm`). Then tell me, and I set
