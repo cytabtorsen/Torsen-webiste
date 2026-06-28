@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-geist-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+    --font-geist-mono: "Geist Mono", ui-monospace, monospace;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: #0b0e14;
+    color: #e6eaf2;
+    font-family: var(--font-geist-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    background-color: rgba(255, 180, 84, 0.28);
+    color: #e6eaf2;
+  }
+
+  /* Honor reduced-motion globally: no transforms, no smooth scroll, instant reveals. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* The signature brand device: the word "why" in glowing amber. */
+  .why {
+    color: #ffb454;
+    font-style: italic;
+    text-shadow:
+      0 0 18px rgba(255, 180, 84, 0.45),
+      0 0 2px rgba(255, 180, 84, 0.6);
+  }
+
+  /* Visible keyboard focus on the dark theme (uses outline so it works on
+     anchors, buttons, and the logo alike). */
+  .focus-ring:focus-visible {
+    outline: 2px solid #16c79a;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  .focus-ring-amber:focus-visible {
+    outline: 2px solid #ffb454;
+    outline-offset: 2px;
+  }
+
+  /* Engineering-tool eyebrow / label. */
+  .eyebrow {
+    font-family: var(--font-geist-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #5c6677;
+  }
+
+  /* Faint blueprint grid used behind dark sections. */
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, rgba(27, 34, 48, 0.55) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(27, 34, 48, 0.55) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 35%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 35%, transparent 100%);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
