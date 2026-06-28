@@ -10,7 +10,6 @@ import {
   useTransform,
 } from "framer-motion";
 import { Container } from "@/components/Section";
-import { WaitlistForm } from "@/components/WaitlistForm";
 import { hero } from "@/lib/copy";
 
 /**
@@ -199,7 +198,20 @@ export function Hero() {
             transition={{ duration: 0.6, delay: 0.22 }}
             className="mt-9"
           >
-            <WaitlistForm variant="hero" />
+            <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+              <a
+                href="#early-access"
+                className="focus-ring-amber inline-flex h-12 items-center justify-center rounded-lg bg-amber px-6 text-[15px] font-semibold text-ground shadow-glow transition-[transform,box-shadow,filter] duration-200 hover:-translate-y-px hover:shadow-[0_0_48px_-6px_rgba(255,180,84,0.6)] hover:brightness-105 active:translate-y-0"
+              >
+                {hero.cta}
+              </a>
+              <a
+                href="#keep-posted"
+                className="focus-ring inline-flex items-center rounded text-[14px] text-ink-dim underline decoration-ink-faint/40 underline-offset-4 transition-colors hover:text-ink"
+              >
+                {hero.secondary}
+              </a>
+            </div>
           </motion.div>
         </div>
       </Container>

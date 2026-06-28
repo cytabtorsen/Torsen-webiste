@@ -1,8 +1,15 @@
 import { Section, Container } from "@/components/Section";
+import { PilotForm } from "@/components/PilotForm";
 import { WaitlistForm } from "@/components/WaitlistForm";
-import { ctaSection } from "@/lib/copy";
+import { ctaSection, pilotForm } from "@/lib/copy";
 
-/** Closing CTA — repeat email capture. Nav "Request early access" anchors here. */
+/**
+ * Closing CTA — the forensics-pilot front door. The primary action is the gated
+ * intake form (PilotForm); the lightweight "keep me posted" email sits below it
+ * as the secondary path. The hero's primary CTA scrolls to this section
+ * (#early-access); its secondary link scrolls to the keep-me-posted block
+ * (#keep-posted). Nav "Apply for a forensics pilot" anchors here too.
+ */
 export function CTASection() {
   return (
     <Section
@@ -18,8 +25,20 @@ export function CTASection() {
           {ctaSection.heading}
         </h2>
         <p className="mt-4 max-w-xl text-lg text-ink-dim">{ctaSection.sub}</p>
-        <div className="mt-9 flex w-full justify-center">
-          <WaitlistForm variant="footer" />
+
+        <div className="mt-12 w-full max-w-2xl">
+          <PilotForm />
+
+          {/* Secondary low-intent path — the lightweight "keep me posted" email. */}
+          <div
+            id="keep-posted"
+            className="mt-12 scroll-mt-24 border-t border-ground-line pt-8 text-center"
+          >
+            <p className="text-[13px] text-ink-dim">{pilotForm.secondaryPrompt}</p>
+            <div className="mt-4 flex justify-center">
+              <WaitlistForm variant="footer" />
+            </div>
+          </div>
         </div>
       </Container>
     </Section>

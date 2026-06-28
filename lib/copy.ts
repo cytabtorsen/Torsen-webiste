@@ -49,6 +49,8 @@ export const hero = {
   h1: { whyWord: "Why", rest: "did the robot do that?" },
   sub: "You already log everything — Foxglove, Rerun, rosbags. None of it explains a learned policy’s decision. Torsen reconstructs the grounded “why” — from camera and physical ground truth, curated to the few signals that matter, kept as an independent record.",
   cta: "Apply for a forensics pilot",
+  // Secondary text link beside the primary CTA — both scroll to the intake section.
+  secondary: "or just keep me posted",
 } as const;
 
 export const problem = {
@@ -165,16 +167,127 @@ export const privacy = {
   back: "Back to torsen.ai",
 } as const;
 
+// The lightweight "keep me posted" path (secondary to the forensics-pilot intake
+// form). Single email -> Formspree. The primary application is `pilotForm`.
 export const waitlist = {
   placeholder: "you@company.com",
-  cta: "Apply for a forensics pilot",
+  cta: "Keep me posted",
   sending: "Sending…",
-  requested: "Got it ✓",
-  success: "Thanks — we’ll be in touch about reconstructing your failure.",
+  requested: "Added ✓",
+  success: "You’re on the list — we’ll reach out when there’s something worth sharing.",
   error: "Something went wrong. Please try again.",
   invalid: "Enter a valid email address.",
   // Shown when no Formspree endpoint is configured yet.
   unconfigured: "Form endpoint not configured yet.",
-  // Low-intent secondary path: this is still a single email field under the hood.
-  privacy: "or just keep me posted — one email, no spam.",
+  // Low-intent capture: one email, no spam.
+  privacy: "One email when there’s news. No spam.",
+} as const;
+
+/**
+ * The forensics-pilot intake form (Phase 2a). The gated application that doubles
+ * as a discovery instrument + willingness-to-pay probe. Sits under
+ * ctaSection.heading / ctaSection.sub; the lightweight "keep me posted" path
+ * keeps using the `waitlist` object above. Guardrail-safe: founder-led,
+ * limited-slot framing — never promises instant turnaround or an automated
+ * product, never implies Torsen prevents/fixes/controls anything. The WTP probe
+ * reads as research, not a sell (a friction-free "no" is a first-class option;
+ * any amount is explicitly optional and ballpark).
+ */
+export const pilotForm = {
+  source: "torsen.ai forensics-pilot",
+  submit: "Send us the failure",
+  sending: "Sending…",
+  error: "Something went wrong sending that. Please try again.",
+  unconfigured: "Form endpoint not configured yet.",
+  errorSummaryTitle: "Please correct a few things:",
+  // Founder-led, limited-slot expectation — sits under the submit button.
+  nextStep:
+    "We take a handful of incidents at a time — a founder reads every application and replies in person.",
+  // Single Formspree endpoint; honest + minimal.
+  privacy: "Your answers go to one inbox via Formspree — no marketing, never shared.",
+  // Replaces the form on success (founder-to-engineer voice).
+  success: {
+    title: "Received.",
+    body: "We read every one of these ourselves — expect a reply, founder-to-engineer, about reconstructing this failure with you.",
+  },
+  // Fieldset legends — chunk the form so 8 inputs don't read as a wall.
+  legends: { incident: "The failure", you: "You & your stack" },
+  // Divider into the secondary low-intent path (renders <WaitlistForm/>).
+  secondaryPrompt: "Not ready to bring a failure yet?",
+  fields: {
+    companyRole: {
+      label: "Company & your role",
+      placeholder: "Figure — reliability lead · Agility — field engineer",
+      help: "We work with the engineer who owns the failure, not central IT.",
+      error: "Tell us who you are and what you own — the failure-owner, not central IT.",
+    },
+    policyStack: {
+      label: "Primary policy stack",
+      placeholder: "Select the policy in control —",
+      options: [
+        { value: "vla", label: "VLA — vision-language-action" },
+        { value: "il", label: "Imitation learning" },
+        { value: "rl", label: "Reinforcement learning" },
+        { value: "hybrid", label: "Hybrid / multiple" },
+        { value: "other", label: "Other learned policy" },
+      ],
+      error: "Pick the policy that was in control when it failed.",
+    },
+    robotModel: {
+      label: "Robot type & model family",
+      placeholder: "e.g. humanoid, π0 · wheeled manipulator, in-house IL",
+      help: "Hardware and the model family it runs — as specific as you can share.",
+      error: "Name the robot and the model family — even roughly.",
+    },
+    incident: {
+      label: "The incident",
+      placeholder: "What did the robot do, and what couldn’t your logs explain about why?",
+      help: "One failure your recordings show, but never explain. No customer names needed.",
+      error: "Give us a couple of sentences — the failure your logs couldn’t explain.",
+    },
+    hasRecording: {
+      label: "Do you have a recording of it?",
+      help: "A rosbag/MCAP of the failure window is ideal, but not required to apply.",
+      options: [
+        { value: "yes", label: "Yes — a rosbag or MCAP I can share" },
+        { value: "no", label: "No recording of this one" },
+        { value: "unsure", label: "Not sure / would have to check" },
+      ],
+      error: "Let us know if there’s a recording — yes, no, or not sure.",
+    },
+    timeToRootCause: {
+      label: "Time from incident to confirmed root cause — today",
+      placeholder: "How long it takes you now —",
+      help: "Roughly, for a failure like this one — from when it happened to a root cause you’d stand behind.",
+      options: [
+        { value: "lt1h", label: "Under an hour" },
+        { value: "1to8h", label: "1–8 hours" },
+        { value: "1to3d", label: "1–3 days" },
+        { value: "gt3d", label: "More than 3 days" },
+        { value: "unresolved", label: "Still open — we never confirmed it" },
+      ],
+      error: "Pick the range that’s closest — a rough honest answer beats a precise guess.",
+    },
+    wtp: {
+      label:
+        "If a scoped forensics pilot reconstructed this failure, would a token fee be worth it to you?",
+      help: "Honest answers help us scope this fairly — there’s no wrong one, and no commitment here.",
+      options: [
+        { value: "yes", label: "Yes — that’d be worth paying for" },
+        { value: "maybe", label: "Maybe — depends what it surfaced" },
+        { value: "no", label: "No — I’d only want it free" },
+      ],
+      error: "Pick the one that’s most honest — yes, maybe, or no.",
+    },
+    wtpAmount: {
+      // Conditional: shown only when wtp is "yes" or "maybe". Always optional.
+      label: "A ballpark, if one comes to mind",
+      placeholder: "e.g. a few hundred to scope it — only if a figure’s in your head",
+    },
+    email: {
+      label: "Work email",
+      placeholder: "you@company.com",
+      error: "Enter a valid work email so we can follow up.",
+    },
+  },
 } as const;

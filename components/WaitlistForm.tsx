@@ -64,7 +64,7 @@ export function WaitlistForm({ variant = "hero" }: { variant?: "hero" | "footer"
     <form onSubmit={onSubmit} noValidate className="w-full max-w-md">
       <div className="flex flex-col gap-3 sm:flex-row">
         <label htmlFor={inputId} className="sr-only">
-          Work email address for the early-access waitlist
+          Work email address to keep me posted
         </label>
         <input
           id={inputId}
