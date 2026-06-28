@@ -1,121 +1,150 @@
 /**
- * Single source of truth for all site copy (guardrail-safe, verbatim from the
- * approved §8 copy block).
+ * Single source of truth for all site copy.
  *
- * POSITIONING GUARDRAIL — load-bearing. Torsen is the accountability / witness
- * layer: it witnesses, reconstructs, explains, records — independently. It is
- * NOT a safety mechanism and NOT the robot's "hands."
- *   Words to use:   witness, reconstruct, explain, evidence, record, independent
- *   Words to avoid: prevent, fix, control, guarantee safety, autonomous correction
- * Copy must never imply Torsen prevents or controls anything.
+ * POSITIONING GUARDRAIL — load-bearing. Torsen is the EYES & MEMORY of a
+ * learned-policy fleet, never its HANDS. It is a read-only, independent witness:
+ * it reconstructs, explains, grounds, and records the "why" behind a failure.
+ * It never controls the robot, never prevents or fixes a failure, never acts.
+ *   Words to USE:    witness, reconstruct, explain, evidence, record, independent,
+ *                    grounded, legible, root cause, time-to-root-cause.
+ *   Words to AVOID:  prevent, fix, control, guarantee safety, autonomous
+ *                    correction, "replace the engineer," "Torsen acts/decides."
+ *
+ * HONESTY GUARDRAIL — do NOT claim the reader is "blind" or "has no
+ * observability." Learned-policy teams already log everything (Foxglove, Rerun,
+ * rosbags/ROS 2, MCAP). The gap Torsen closes is narrow and specific:
+ *   1. The policy isn't on the bus — logs see inputs and output commands, never
+ *      the decision. Every tool shows WHAT happened, not WHY.
+ *   2. Detectors only flag, they don't explain — a red light, not a root cause.
+ *   3. It's all self-reported and mutable — no independent, tamper-evident record.
+ *
+ * SCOPE GUARDRAIL (Phase 1) — positioning + CTA reframe only. NO regulation,
+ * liability, or downtime-cost ($/hour) claims in any public field; those are a
+ * later act. The CTA is the forensics-pilot front door, not a waitlist.
+ *
+ * STRUCTURAL INVARIANTS — components parse these; do not break:
+ *   - hero.h1 = { whyWord: "Why", rest }; whyWord renders in amber italic.
+ *   - audience.body MUST contain the exact lowercase substring
+ *     `why did it do that?` exactly once (Audience splits on it to color "why").
+ *   - every string in audience.roles MUST appear verbatim in audience.body.
+ *   - mission.line MUST contain the lowercase word `why` (Mission splits to color it).
+ *   - difference.rows[1] is the independence row (Difference lifts it to the amber
+ *     lead position). Keep independence at index 1.
+ *   - whatItDoes.cards ids stay "reconstruct" / "ground" / "independent" (glyph + style lookup).
+ *   - problem.panels labels render in a tiny 2-panel visual — keep them ~1 word.
  */
 
 export const site = {
   name: "Torsen",
   domain: "torsen.ai",
-  title: "Torsen — the independent black box for physical AI",
+  title: "Torsen — independent incident reconstruction for physical AI",
   description:
-    "Torsen is the independent black box for physical AI. It reconstructs the “why” behind an autonomous failure — from physical ground truth, not guesswork.",
+    "You already log everything — Foxglove, Rerun, rosbags. None of it explains a learned policy’s decision. Torsen reconstructs the grounded “why” behind a failure, from camera and physical ground truth, and keeps it as an independent record.",
   url: "https://torsen.ai",
 } as const;
 
 export const hero = {
-  eyebrow: "Independent reconstruction for physical AI",
+  eyebrow: "Independent incident reconstruction for physical AI",
   // H1 is split so the leading word can carry the amber "why" signature.
   h1: { whyWord: "Why", rest: "did the robot do that?" },
-  sub: "Torsen is the independent black box for physical AI. It reconstructs the “why” behind an autonomous failure — from physical ground truth, not guesswork.",
-  cta: "Request early access",
+  sub: "You already log everything — Foxglove, Rerun, rosbags. None of it explains a learned policy’s decision. Torsen reconstructs the grounded “why” — from camera and physical ground truth, curated to the few signals that matter, kept as an independent record.",
+  cta: "Apply for a forensics pilot",
 } as const;
 
 export const problem = {
-  eyebrow: "The problem",
-  heading: "As robots leave the human loop, the answer to why disappears.",
-  body: "Autonomy removes the human who used to explain what happened. The machine keeps acting; the answer to “why” disappears. Logs show what was recorded — not why the policy chose it.",
+  eyebrow: "The gap",
+  heading: "You can see what happened. You still can’t see why.",
+  body: "Your stack already captures everything and replays it in 3D. But the policy was never on the bus — your logs see the inputs and the commands, never the decision in between. And the record you’re scrubbing is your own: self-reported and mutable. Every tool shows what happened. None reconstructs why.",
   panels: {
     logsLabel: "logs",
-    logsState: "recorded",
+    logsState: "what",
     reconLabel: "reconstruction",
-    reconState: "grounded",
-    captionAfter: " > reconstructed",
+    reconState: "why",
+    captionAfter: " — grounded, independent",
   },
 } as const;
 
 export const whatItDoes = {
   eyebrow: "What Torsen does",
-  heading: "Reconstruct the moment. Ground every claim. Keep an independent record.",
+  heading: "Reconstruct the decision. Ground every claim. Keep an independent record.",
   cards: [
     {
       id: "reconstruct",
-      title: "Reconstruct the failure window.",
-      body: "Rebuild the moment things went wrong — the window around the failure and the grounded “why” behind it.",
+      title: "Reconstruct the decision, not just the telemetry.",
+      body: "Torsen finds the failure window in a recording you already have and reconstructs what the policy perceived, believed, and intended — the legible why your logs and replays can’t show.",
     },
     {
       id: "ground",
       title: "Ground every claim in camera + physical signals.",
-      body: "Camera and physical signals are truth; testimony is hypothesis. Every claim is anchored to physical ground truth, not guesswork.",
+      body: "Camera and physical signals are ground truth; a policy explanation or a detector’s alarm is a hypothesis. Every claim Torsen makes is tied to a retrieved signal — never asserted, always shown.",
     },
     {
       id: "independent",
       title: "Keep an independent, tamper-evident record — a witness, never an actor.",
-      body: "An incident bundle held independently of the machine. Torsen witnesses; it never acts.",
+      body: "Torsen reads your stack; it never touches the control loop. The reconstruction is held as a replayable record independent of the machine that acted — so the account of the failure isn’t the failing system’s own.",
     },
   ],
 } as const;
 
 export const difference = {
-  eyebrow: "How it's different",
-  heading: "Visualizers show you the data. Torsen tells you why — independently.",
+  eyebrow: "Where it fits",
+  heading: "Your tools show you the data. Torsen reconstructs why — independently.",
   // Generic category — deliberately no named/logoed competitor.
-  colThem: "Visualizers & dashboards",
+  colThem: "Logs, replay & detectors",
   colUs: "Torsen",
-  caption: "How Torsen differs from visualizers and dashboards",
-  // Comparison strip: the status quo vs. Torsen. Lead with independence.
+  caption: "How Torsen differs from the observability you already run",
+  // Comparison strip: the status quo (which the reader already runs) vs. Torsen.
+  // INVARIANT: rows[1] is the independence row — Difference.tsx lifts it to the
+  // amber lead position so independence reads first. Keep it at index 1.
   rows: [
-    { them: "Viewers and dashboards show you the data.", us: "Torsen reconstructs why the policy chose it." },
-    { them: "The record lives inside the machine that acted.", us: "The record is kept independently — a witness, not the actor." },
-    { them: "Answers rest on logs and testimony.", us: "Answers are grounded in camera + physical signals." },
+    { them: "Logs and replay see the inputs and the commands.", us: "Torsen reconstructs the decision in between — what the policy perceived, believed, and intended." },
+    { them: "The record is the operator’s own log — self-reported and mutable.", us: "The record is held independently of the machine that acted — a witness, not the actor." },
+    { them: "Detectors flag that something went wrong.", us: "Torsen explains why, grounded in camera + physical signals." },
   ],
 } as const;
 
 export const audience = {
   eyebrow: "Who it's for",
-  heading: "Built for the people who have to answer for the machine.",
-  body: "Reliability and failure-analysis engineers shipping learned-policy robots — the people who get asked “why did it do that?” and need a grounded answer.",
+  heading: "Built for the teams whose failures have no line to read.",
+  // INVARIANT: must contain the exact lowercase substring `why did it do that?`
+  // exactly once, and each `roles` phrase below must appear verbatim here.
+  body: "VLA, imitation, RL — learned policies are becoming the standard for complex robots, and how they fail. When a learned-policy robot fails, there’s no stack trace, no line to read. The reliability and deployment engineers who own that failure get asked “why did it do that?” and have to answer it from a recording that never shows the decision. Torsen is the reconstruction for when they do.",
   // Role chips — each phrase appears verbatim in `body` above.
-  roles: ["reliability", "failure-analysis", "learned-policy robots"],
+  roles: ["learned-policy robot", "reliability", "deployment engineers"],
   rolesLabel: "The people Torsen is built for",
 } as const;
 
 export const mission = {
-  eyebrow: "Mission",
-  // North-star line. Keep large and quiet.
-  line: "Make every autonomous machine able to answer “why did you do that?” — independently, for as long as it runs.",
+  eyebrow: "Where this goes",
+  // North-star line. Keep large and quiet. INVARIANT: must contain lowercase "why".
+  line: "Learned policies are becoming how every complex robot is built — and how they fail. Torsen is the independent record of why, for as long as they run.",
 } as const;
 
 export const ctaSection = {
-  heading: "Request early access.",
-  sub: "Built for the people who have to answer for the machine.",
-  cta: "Request early access",
+  heading: "Bring us your hardest unexplained failure.",
+  sub: "We take a handful of incidents at a time. Tell us about a failure your logs couldn’t explain — one you already have a recording of — and we’ll follow up to reconstruct the grounded why with you, founder-to-engineer.",
+  cta: "Apply for a forensics pilot",
 } as const;
 
 export const nav = {
   links: [
-    // Label matches the section eyebrow ("The problem") so the vocabulary is consistent.
-    { label: "The problem", href: "#problem" },
+    // Labels match the section eyebrows so the vocabulary stays consistent.
+    { label: "The gap", href: "#problem" },
     { label: "What it does", href: "#what" },
-    { label: "Difference", href: "#difference" },
-    { label: "Mission", href: "#mission" },
+    { label: "Where it fits", href: "#difference" },
+    { label: "Where this goes", href: "#mission" },
   ],
-  cta: "Request early access",
+  cta: "Apply for a forensics pilot",
   menuOpen: "Open menu",
   menuClose: "Close menu",
 } as const;
 
 export const footer = {
-  // One-line company descriptor — legitimacy for enterprise engineers being asked
-  // to trust an "independent record". Guardrail-safe: witness / reconstruct / independent.
+  // One-line company descriptor — legitimacy for the reliability engineer being
+  // asked to trust an "independent record". Guardrail-safe: witness / reconstruct
+  // / grounded / independent.
   descriptor:
-    "The independent black box for physical AI — a witness layer that reconstructs why autonomous machines fail.",
+    "Independent incident reconstruction for physical AI — a read-only witness that reconstructs the grounded why behind a learned policy’s failure, and keeps it as an independent record.",
   contact: "cyrilletabe@torsen.ai",
   contactHref: "mailto:cyrilletabe@torsen.ai",
   privacyLabel: "Privacy",
@@ -126,9 +155,10 @@ export const footer = {
 export const privacy = {
   title: "Privacy",
   updated: "Last updated June 2026.",
-  // Honest + minimal. Matches what the waitlist form actually does (Formspree).
+  // Honest + minimal. Matches what the form actually does (single email field,
+  // handled by Formspree) under the reframed forensics-pilot / keep-me-posted intent.
   body: [
-    "Torsen collects only the email address you submit to the early-access waitlist. We use it for one thing: to contact you when early access opens.",
+    "Torsen collects only the email address you submit — whether you’re applying for a forensics pilot or just asking to be kept posted. We use it for one thing: to reply to you about reconstructing a failure, or to update you when there’s something worth sharing.",
     "Submissions are handled by Formspree, our form provider, which processes the email on our behalf. We do not sell, rent, or share your address, and we send no marketing.",
     "Want off the list? Email cyrilletabe@torsen.ai and we’ll delete your address.",
   ],
@@ -137,13 +167,14 @@ export const privacy = {
 
 export const waitlist = {
   placeholder: "you@company.com",
-  cta: "Request early access",
+  cta: "Apply for a forensics pilot",
   sending: "Sending…",
-  requested: "Requested ✓",
-  success: "You’re on the list. We’ll be in touch.",
+  requested: "Got it ✓",
+  success: "Thanks — we’ll be in touch about reconstructing your failure.",
   error: "Something went wrong. Please try again.",
   invalid: "Enter a valid email address.",
   // Shown when no Formspree endpoint is configured yet.
-  unconfigured: "Waitlist endpoint not configured yet.",
-  privacy: "No spam. One email when early access opens.",
+  unconfigured: "Form endpoint not configured yet.",
+  // Low-intent secondary path: this is still a single email field under the hood.
+  privacy: "or just keep me posted — one email, no spam.",
 } as const;
