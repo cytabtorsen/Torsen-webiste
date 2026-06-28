@@ -291,3 +291,120 @@ export const pilotForm = {
     },
   },
 } as const;
+
+/**
+ * The head-to-head demo (brief §5 — the centerpiece). A flat rosbag timeline the
+ * visitor scrubs (status quo) vs. a curated Torsen reconstruction, racing on
+ * time-to-root-cause.
+ *
+ * HONESTY — this is a REPRESENTATIVE reconstruction: synthetic, clearly labeled,
+ * no real customer data. The left "you" timer is the visitor's OWN real scrub
+ * time (wall-clock); the right Torsen figure is a fixed representative number.
+ *
+ * GUARDRAIL — Torsen reconstructs/explains/records; it never prevented, fixed,
+ * controlled, or should-have-prevented anything. Every signal below is a grounded
+ * claim tied to a retrieved camera/physical signal — what HAPPENED and why, never
+ * a Torsen intervention. "Out-of-distribution" is always glossed in plain language.
+ *
+ * STRUCTURAL NOTES for the component:
+ *   - rosbag.topics renders as the flat, undifferentiated left timeline — none is
+ *     flagged; the point is density. texture ∈ {"noisy","steady","sparse"}.
+ *   - signals[] is the curated right panel (4 signals). Each is one grounded claim.
+ *   - signals order is the causal chain: operator dropped -> surface OOD -> balance
+ *     margin collapses -> contact breaks. Keep this order.
+ *   - the component derives playhead/marker positions from spanStart/spanEnd and the
+ *     failureAt / signal trigger timestamps; the left "you" clock is wall-clock.
+ */
+export const headToHead = {
+  eyebrow: "Time-to-root-cause",
+  heading: "Same failure. Two ways to find out why.",
+  question: "Why did it fall toward the operator?",
+  intro:
+    "A learned-policy humanoid lost its footing in a shared workcell and toppled toward an operator; the e-stop fired. Nobody was hurt. Scrub the raw log to find out why — then reconstruct it with Torsen.",
+  disclaimer:
+    "Representative reconstruction — synthetic data, not a real customer incident. Built to show what a Torsen reconstruction looks like.",
+
+  rosbag: {
+    label: "Raw rosbag timeline",
+    sublabel: "What you’d scrub today",
+    caption: "A real recording, replayed flat — dozens of topics, no culprit marked.",
+    scrubHint: "Scrub to hunt for the failure",
+    spanStart: "12:03:50.000",
+    spanEnd: "12:04:12.400",
+    failureAt: "12:04:07.131",
+    failureLabel: "topple · e-stop",
+    topics: [
+      { topic: "/tf", type: "tf2_msgs/TFMessage", rate: 200, texture: "noisy" },
+      { topic: "/tf_static", type: "tf2_msgs/TFMessage", rate: 1, texture: "sparse" },
+      { topic: "/joint_states", type: "sensor_msgs/JointState", rate: 500, texture: "noisy" },
+      { topic: "/imu/data", type: "sensor_msgs/Imu", rate: 400, texture: "noisy" },
+      { topic: "/odom", type: "nav_msgs/Odometry", rate: 200, texture: "steady" },
+      { topic: "/cmd_vel", type: "geometry_msgs/Twist", rate: 100, texture: "steady" },
+      { topic: "/policy/action", type: "std_msgs/Float32MultiArray", rate: 50, texture: "steady" },
+      { topic: "/policy/value", type: "std_msgs/Float32", rate: 50, texture: "noisy" },
+      { topic: "/footstep_plan", type: "humanoid_msgs/FootstepArray", rate: 10, texture: "sparse" },
+      { topic: "/com_state", type: "humanoid_msgs/CoMState", rate: 200, texture: "noisy" },
+      { topic: "/foot_contacts", type: "humanoid_msgs/ContactState", rate: 200, texture: "steady" },
+      { topic: "/camera/color/image_raw", type: "sensor_msgs/Image", rate: 30, texture: "steady" },
+      { topic: "/camera/depth/image_rect", type: "sensor_msgs/Image", rate: 30, texture: "steady" },
+      { topic: "/perception/tracks", type: "vision_msgs/Detection3DArray", rate: 20, texture: "noisy" },
+      { topic: "/scan", type: "sensor_msgs/LaserScan", rate: 15, texture: "sparse" },
+      { topic: "/diagnostics", type: "diagnostic_msgs/DiagnosticArray", rate: 5, texture: "sparse" },
+      { topic: "/estop", type: "std_msgs/Bool", rate: 1, texture: "sparse" },
+      { topic: "/clock", type: "rosgraph_msgs/Clock", rate: 1000, texture: "steady" },
+    ],
+  },
+
+  reconstruction: {
+    label: "Torsen reconstruction",
+    sublabel: "The few signals that mattered",
+    button: "Reconstruct with Torsen →",
+    caption: "Jumped to the failure window. Four grounded signals, in the order they failed.",
+    groundedTag: "tied to a retrieved signal",
+    reset: "Run it again",
+  },
+
+  signals: [
+    {
+      id: "operatorTrack",
+      label: "Operator-track confidence",
+      value: "0.91 → 0.12",
+      trigger: "12:04:05.880",
+      shows: "A beat before the fall, the operator passed behind a workcell fixture and the world-model dropped the track — so the space it fell into was no longer held as a person.",
+    },
+    {
+      id: "surfaceNovelty",
+      label: "Surface-novelty score",
+      value: "0.08 → 0.86",
+      trigger: "12:04:06.620",
+      shows: "The lead foot met a wet grating unlike anything in the policy’s training — out-of-distribution, i.e. off the edge of what it had ever seen — and its footing response stopped being reliable.",
+    },
+    {
+      id: "stabilityMargin",
+      label: "CoM / ZMP stability margin",
+      value: "62 mm → −18 mm",
+      trigger: "12:04:06.890",
+      shows: "Balance headroom went negative and the body’s momentum carried right — into the floor space the operator had just dropped out of, so the trajectory was never raised as a human-proximity event.",
+    },
+    {
+      id: "footContact",
+      label: "Foot-contact symmetry",
+      value: "0.97 → 0.04",
+      trigger: "12:04:07.131",
+      shows: "The right foot lost purchase on the grating, load dumped onto a foot that couldn’t hold it, both feet broke contact — the topple — and the e-stop fired.",
+    },
+  ],
+
+  why: {
+    line: "It went off the edge of its training on a surface it had never seen, and lost its balance toward a space it had stopped seeing the operator in.",
+    groundedNote: "Every line above is tied to a signal in the record — reconstructed, not inferred.",
+  },
+
+  stopwatch: {
+    youName: "You",
+    youSuffix: "and counting",
+    torsenName: "Torsen",
+    torsenValue: "3.2s",
+    caption: "The left clock is your own time, scrubbing right now. The right is a representative Torsen reconstruction time.",
+  },
+} as const;
