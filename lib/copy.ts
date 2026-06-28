@@ -105,6 +105,91 @@ export const difference = {
   ],
 } as const;
 
+/**
+ * HOW IT WORKS — the engine, in the open (brief §4 item 4 · Phase 4a).
+ *
+ * The 5-stage pipeline: Capture → Detect → Curate → Replay → Record. This
+ * section earns the ROS engineer's trust by being legible — it speaks ROS 2 /
+ * rosbag2 / MCAP and proves Torsen reads the stack they already run: read-only,
+ * no rip-and-replace.
+ *
+ * POSITIONING GUARDRAIL — Torsen is the witness, never the actor. Capture is
+ * read-only; Detect treats a detector's alarm as a pointer/hypothesis, not the
+ * answer; Curate is THE product (agent-curation cuts dozens of topics to the
+ * 3–5 grounded signals that mattered — the "legibility-per-human" thesis, echoing
+ * the head-to-head); Replay is a replayable SPATIAL reconstruction (AR is a
+ * future LENS, never "AR beats screens"); Record is independent + tamper-evident.
+ *
+ * HONESTY GUARDRAIL — never imply the reader is blind. They already run
+ * Foxglove / Rerun / rosbags. `limits` is load-bearing candor: state plainly
+ * that Torsen never controls, prevents, or fixes — it explains and records. For
+ * the ROS crowd this candor reads as MORE credible, not less. (Those AVOID words
+ * appear here ONLY in negation — the explicit "what it doesn't do.")
+ *
+ * SCOPE GUARDRAIL (Phase 4a) — engine + read-only candor ONLY. NO regulation
+ * dates, liability, or downtime-cost ($/hour) claims — those are Phase 4b.
+ *
+ * STRUCTURAL INVARIANT — stages[] is index-aligned to the pipeline order the
+ * component renders (capture → detect → curate → replay → record); stages[2] =
+ * Curate is the load-bearing product stage the component lifts in amber. Keep
+ * this order, and keep each stage's `id` (drives the glyph + accent lookup).
+ */
+export const howItWorks = {
+  eyebrow: "How it works",
+  heading: "The engine, in the open.",
+  intro:
+    "Torsen reads the recordings you already keep and reconstructs the grounded why behind one failure — five stages, no rip-and-replace.",
+  // The standing promise for the engineer with Foxglove open in the next tab.
+  readsYourStack:
+    "Reads your stack — rosbag2 / MCAP, ROS 2 topics, camera + physical signals. Read-only, no rip-and-replace.",
+  // Tiny amber marker under the Curate stage — the load-bearing step, labelled so
+  // it reads as the product even in monochrome (not distinguished by colour alone).
+  curateMarker: "the why is decided here",
+  stages: [
+    {
+      id: "capture",
+      title: "Capture",
+      body: "Torsen ingests a recording of the failure window you already have — nothing new to instrument.",
+      grounding:
+        "Opens a rosbag2 / MCAP off disk — the topics, camera frames, and physical signals like /imu and /joint_states are already there. It reads the file; it never joins the live bus.",
+    },
+    {
+      id: "detect",
+      title: "Detect",
+      body: "Torsen finds the failure window — and treats a detector's alarm as a pointer to investigate, not the answer.",
+      grounding:
+        "A detector — /diagnostics, an e-stop, a FAIL-Detect-style monitor — is a red light: it flags that something went wrong, never why. Torsen takes the flag as a hypothesis and tests it against the camera + physical signals.",
+    },
+    {
+      id: "curate",
+      title: "Curate",
+      body: "An agent narrows dozens of topics to the three-to-five grounded signals that actually mattered — what the policy perceived, believed, and intended.",
+      grounding:
+        "The product: legibility-per-human. Each surfaced signal is tied to a retrieved camera or physical measurement — shown, never asserted.",
+    },
+    {
+      id: "replay",
+      title: "Replay",
+      body: "The curated signals become a replayable spatial reconstruction you can scrub and orbit — the failure in place, not on a flat timeline.",
+      grounding:
+        "Rebuilt from the camera + physical ground truth in the recording, each signal anchored in 3D. On your screen today; a tablet or glasses are later lenses on the same record, not a better truth.",
+    },
+    {
+      id: "record",
+      title: "Record",
+      body: "The reconstruction is kept as an independent, tamper-evident record — held apart from the machine that acted.",
+      grounding:
+        "A witness, never an actor. The account of the failure isn't the failing system's own self-report — it's an independent record you can revisit, share, and stand behind.",
+    },
+  ],
+  // Candid "what it doesn't do (yet)" — credibility feature for the ROS crowd
+  // (brief §7.5). The AVOID words appear here, in negation, on purpose.
+  limits: {
+    label: "What it doesn't do (yet)",
+    body: "Torsen is read-only. It never controls the robot, never prevents or fixes a failure, never touches the control loop. It explains what happened and records why — that's the whole job, on purpose.",
+  },
+} as const;
+
 export const audience = {
   eyebrow: "Who it's for",
   heading: "Built for the teams whose failures have no line to read.",
@@ -134,6 +219,7 @@ export const nav = {
     { label: "The gap", href: "#problem" },
     { label: "What it does", href: "#what" },
     { label: "Where it fits", href: "#difference" },
+    { label: "How it works", href: "#how" },
     { label: "Where this goes", href: "#mission" },
   ],
   cta: "Apply for a forensics pilot",

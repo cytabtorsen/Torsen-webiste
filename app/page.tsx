@@ -6,6 +6,7 @@ import { HeadToHead } from "@/components/sections/HeadToHead";
 import { Problem } from "@/components/sections/Problem";
 import { WhatItDoes } from "@/components/sections/WhatItDoes";
 import { Difference } from "@/components/sections/Difference";
+import { HowItWorks } from "@/components/sections/HowItWorks";
 import { Audience } from "@/components/sections/Audience";
 import { Mission } from "@/components/sections/Mission";
 import { CTASection } from "@/components/sections/CTASection";
@@ -27,6 +28,7 @@ export default function Home() {
         <Problem />
         <WhatItDoes />
         <Difference />
+        <HowItWorks />
         <Audience />
         <Mission />
         <CTASection />
