@@ -16,8 +16,8 @@ import type { Group, Mesh, MeshStandardMaterial } from "three";
  * this only mounts when an eligible desktop reconstructs (see useCanvasEligible),
  * so three.js never enters the initial bundle and never touches LCP.
  *
- * Asset: "Animated Robot" by Quaternius (Poly Pizza) — CC0, no attribution
- * required. Stored at /public/models/humanoid.glb.
+ * Asset: "RiggedFigure" by Cesium — a sleek abstract grey humanoid — licensed
+ * CC BY 4.0 (credited in the footer). Stored at /public/models/humanoid.glb.
  */
 
 // Warm the model fetch as soon as this (already-lazy) chunk loads.
@@ -32,8 +32,9 @@ function Humanoid() {
   const { scene, animations } = useGLTF("/models/humanoid.glb");
   const { actions, names } = useAnimations(animations, group);
 
-  // Recolor the CC0 game asset (orange "Main" / grey / black) into muted technical
-  // metals that fit the dark teal/amber system, so it reads industrial, not toylike.
+  // Recolor the figure into muted technical metals that fit the dark teal/amber
+  // system — a single cool steel for abstract single-material figures (RiggedFigure),
+  // or per-name tints if a multi-material game asset is swapped back in.
   useEffect(() => {
     scene.traverse((o) => {
       const mesh = o as Mesh;
@@ -44,6 +45,7 @@ function Humanoid() {
       if (/main/i.test(n)) mat.color.set("#3b4655");
       else if (/grey|gray/i.test(n)) mat.color.set("#6b7585");
       else if (/black/i.test(n)) mat.color.set("#15191f");
+      else mat.color.set("#8e99ab"); // single-material abstract figures → cool steel
       mat.metalness = 0.4;
       mat.roughness = 0.55;
     });

@@ -359,6 +359,11 @@ export const footer = {
   privacyLabel: "Privacy",
   privacyHref: "/privacy/",
   copyright: "© 2026 Torsen. All rights reserved.",
+  // CC BY 4.0 attribution for the head-to-head reconstruction figure (required by
+  // the licence). The 3D model is Cesium's "RiggedFigure"; keep this credit.
+  credit: "Reconstruction figure: “RiggedFigure” by Cesium —",
+  creditLicense: "CC BY 4.0",
+  creditLicenseHref: "https://creativecommons.org/licenses/by/4.0/",
 } as const;
 
 export const privacy = {
