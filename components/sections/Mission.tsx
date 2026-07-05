@@ -10,6 +10,10 @@ import { mission } from "@/lib/copy";
  * ambient amber glow tracks the cursor across the statement (a soft "the page
  * is paying attention" feel), and the word "why" carries the signature amber.
  * Reduced-motion pins the glow centered and disables tracking.
+ *
+ * Two coda beats follow the line: the LIFECYCLE (act three — what the record
+ * unlocks; roadmap, not shipped, and the candor line says so plainly) and the
+ * spatial vision ladder. The lifecycle superseded the old corpus teaser.
  */
 export function Mission() {
   const reduce = useReducedMotion();
@@ -58,7 +62,49 @@ export function Mission() {
           {after}
         </p>
 
-        {/* ── the coda: the spatial vision ladder + the failure-corpus teaser ── */}
+        {/* ── the coda, beat one: the lifecycle — what the record unlocks.
+             ROADMAP, NOT SHIPPED: the candor line below is load-bearing. Every
+             verb acts on the record, never on the robot. ── */}
+        <div
+          aria-hidden="true"
+          className="mt-16 h-px w-full max-w-4xl bg-gradient-to-r from-ground-line to-transparent"
+        />
+        <p className="mt-10 font-mono text-[11px] uppercase tracking-[0.2em] text-ink-faint">
+          {mission.lifecycle.label}
+        </p>
+        <p className="mt-5 max-w-2xl text-[17px] font-medium leading-snug text-ink">
+          {mission.lifecycle.positioning}
+        </p>
+        <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-ink-dim">
+          {mission.lifecycle.intro}
+        </p>
+        <ol className="mt-9 grid max-w-5xl gap-8 sm:grid-cols-2 sm:gap-x-6 lg:grid-cols-4">
+          {mission.lifecycle.steps.map((step, i) => {
+            // `reopen` is the load-bearing step — the one no robotics tool
+            // ships — so it alone carries the amber numeral.
+            const isReopen = step.id === "reopen";
+            return (
+              <li key={step.id}>
+                <span
+                  className={[
+                    "font-mono text-[11px] tabular-nums",
+                    isReopen ? "text-amber/80" : "text-teal/70",
+                  ].join(" ")}
+                >
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <p className="mt-2 text-[15px] font-medium leading-snug text-ink">{step.title}</p>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-ink-dim">{step.body}</p>
+              </li>
+            );
+          })}
+        </ol>
+        <p className="mt-9 flex max-w-2xl gap-3 text-[13px] leading-relaxed text-ink-faint">
+          <span aria-hidden="true" className="mt-[7px] h-1 w-1 shrink-0 rounded-full bg-teal/60" />
+          <span>{mission.lifecycle.candor}</span>
+        </p>
+
+        {/* ── the coda, beat two: the spatial vision ladder ── */}
         <div
           aria-hidden="true"
           className="mt-16 h-px w-full max-w-4xl bg-gradient-to-r from-ground-line to-transparent"
@@ -84,10 +130,6 @@ export function Mission() {
             );
           })}
         </ol>
-        <p className="mt-14 flex max-w-2xl gap-3 text-[15px] leading-relaxed text-ink-dim sm:mt-16">
-          <span aria-hidden="true" className="mt-2 h-1 w-1 shrink-0 rounded-full bg-teal/60" />
-          <span>{mission.corpus}</span>
-        </p>
       </Container>
     </Section>
   );

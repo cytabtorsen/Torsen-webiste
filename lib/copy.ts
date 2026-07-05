@@ -271,8 +271,16 @@ export const audience = {
  *     over time. Screen today → tablet → glasses LATER. AR is the final rung and
  *     a FUTURE lens — never "AR beats screens," never a better truth. rungs is
  *     ordered present → near → future (length 3); the component dims the last.
- *   - corpus: the failure-corpus teaser. GUARDRAIL — understanding/legibility
- *     compounds, NOT prevention. Never "prevent / fix / avoid future failures."
+ *   - lifecycle: act three — what the record unlocks. ROADMAP, NOT SHIPPED.
+ *     GUARDRAILS: every verb acts on the RECORD (recognize, link, hold, reopen
+ *     an issue) — never on the robot; the fix is always the team's. Jira/Linear
+ *     are named as the tracker the READER already runs, never as partners or a
+ *     shipped integration. `candor` is load-bearing and must stay — it states
+ *     plainly that this layer is roadmap, in the limits register. steps[] is
+ *     ordered (fingerprint → tracker → resolve → reopen); keep the order. The
+ *     old `corpus` teaser is superseded by this block — never render both.
+ *     Understanding/legibility compounds, NOT prevention — never "prevent /
+ *     fix / avoid future failures," and never the word "IDE."
  */
 export const mission = {
   eyebrow: "Where this goes",
@@ -286,8 +294,36 @@ export const mission = {
       "Hands-free on glasses, later — standing inside the same grounded record, not a better truth.",
     ],
   },
-  corpus:
-    "Every grounded reconstruction is held independently — so they accumulate. Across a fleet, and one day across sites, that record compounds into a shared, legible account of how learned policies fail: the same kind of failure, recognized across runs, in language a reader who didn’t own the robot can follow.",
+  lifecycle: {
+    label: "What the record unlocks",
+    positioning: "The incident record your post-failure workflow runs through.",
+    intro:
+      "Held independently, reconstructions accumulate — and a record that accumulates can carry the work that comes after a failure. Software teams have closed this loop for a decade. Robotics observability hasn’t.",
+    steps: [
+      {
+        id: "fingerprint",
+        title: "Recurring failures become one issue.",
+        body: "The same failure mode, recognized across runs, fingerprints into a single issue — keyed to task, policy version, and site — instead of ten separate reports nobody rereads.",
+      },
+      {
+        id: "tracker",
+        title: "Issues meet the tracker you already run.",
+        body: "Each issue links both ways into Jira or Linear — the grounded reconstruction one click from the ticket, the ticket one click from the record.",
+      },
+      {
+        id: "resolve",
+        title: "Resolution binds to a policy version.",
+        body: "When the team ships a fix, the issue closes against the checkpoint that carried it. The record holds which policy failed — and which one answered.",
+      },
+      {
+        id: "reopen",
+        title: "A regression reopens its own issue.",
+        body: "If a resolved failure mode recurs under a new checkpoint, the issue reopens on its own. The record notices; the fix stays yours.",
+      },
+    ],
+    candor:
+      "None of this layer is shipped. Today Torsen reconstructs one failure and keeps the independent record; the workflow above is where that record goes — stated plainly, the same way we state what it doesn’t do.",
+  },
 } as const;
 
 /**
