@@ -14,7 +14,10 @@ import { headToHead as hh } from "@/lib/copy";
  * doesn't collide with the grounded-not-generated positioning.
  *
  * Mounts only after the visitor reconstructs (client state), so it never SSRs
- * and never touches LCP. No heavy deps — a native <video>, muted looped inline.
+ * and never touches LCP. No heavy deps — a native <video>, muted inline. It
+ * plays ONCE and holds its final frame (the incident's end-state) — no loop; a
+ * fall that resets every five seconds reads as decoration, not a replay. The
+ * existing "Run it again" reset remounts this component, which replays it.
  * Fallbacks: reduced-motion / data-saver / playback-error (including the mp4
  * not having been dropped in yet) → the static poster frame, same framing.
  */
@@ -51,7 +54,6 @@ export function ReconstructionVideo({ reduce }: { reduce: boolean }) {
             src="/headtohead/reconstruction.mp4"
             poster="/headtohead/reconstruction-poster.jpg"
             muted
-            loop
             playsInline
             autoPlay
             preload="metadata"
