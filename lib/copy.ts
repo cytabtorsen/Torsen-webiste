@@ -359,8 +359,10 @@ export const footer = {
   privacyLabel: "Privacy",
   privacyHref: "/privacy/",
   copyright: "© 2026 Torsen. All rights reserved.",
-  // CC BY 4.0 attribution for the head-to-head reconstruction figure (required by
-  // the licence). The 3D model is Cesium's "RiggedFigure"; keep this credit.
+  // CC BY 4.0 attribution for the figure in the head-to-head stage. The poster
+  // (and the clip seeded from it) are RENDERS of Cesium's "RiggedFigure" —
+  // renders are adaptations, so the credit is owed even with the GLB removed.
+  // Drop this only if the stage is regenerated from a non-CC-BY figure.
   credit: "Reconstruction figure: “RiggedFigure” by Cesium —",
   creditLicense: "CC BY 4.0",
   creditLicenseHref: "https://creativecommons.org/licenses/by/4.0/",
@@ -534,7 +536,7 @@ export const headToHead = {
   intro:
     "A learned-policy humanoid lost its footing in a shared workcell and toppled toward an operator; the e-stop fired. Nobody was hurt. Scrub the raw log to find out why — then reconstruct it with Torsen.",
   disclaimer:
-    "Representative reconstruction — synthetic data, not a real customer incident. Built to show what a Torsen reconstruction looks like.",
+    "Representative reconstruction, rendered — synthetic data, not a real customer incident. Built to show what a Torsen reconstruction looks like.",
 
   rosbag: {
     label: "Raw rosbag timeline",
@@ -574,6 +576,15 @@ export const headToHead = {
     caption: "Jumped to the failure window. Four grounded signals, in the order they failed.",
     groundedTag: "tied to a retrieved signal",
     reset: "Run it again",
+    // The rendered-clip stage (replaces the live 3D). HONESTY — the clip is a
+    // RENDER: labelled in-frame (chip) and owned in the caption; never
+    // "generated / AI / vendor" wording, never passed off as footage. The truth
+    // surface stays the signals + grounded why below the stage.
+    videoChip: "render · representative",
+    videoCaption:
+      "A representative reconstruction, rendered — not real footage, not customer data. The grounded why below is tied to retrieved signals.",
+    videoAlt:
+      "Rendered reconstruction: the humanoid loses its footing on the novel surface patch and topples toward the operator as the e-stop fires.",
   },
 
   signals: [

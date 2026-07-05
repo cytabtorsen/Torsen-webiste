@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Static HTML export -> deployable to GitHub Pages (and Vercel) with no backend.
@@ -8,6 +10,13 @@ const nextConfig = {
   trailingSlash: true,
   // We run type-checking in CI; keep lint from blocking the static export build.
   eslint: { ignoreDuringBuilds: true },
+  env: {
+    // Build-time flag: the head-to-head clip is generated offline and dropped in
+    // by hand (see torsen-planning/seedance-generation-pack.md). Until the mp4
+    // exists, the stage renders the poster only — no <video>, no 404 per reveal.
+    // Committing the mp4 and rebuilding flips this on; no code change needed.
+    NEXT_PUBLIC_HH_VIDEO: String(existsSync("public/headtohead/reconstruction.mp4")),
+  },
 };
 
 export default nextConfig;

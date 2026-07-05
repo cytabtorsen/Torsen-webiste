@@ -1,35 +1,18 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import dynamic from "next/dynamic";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 import { Section, Container } from "@/components/Section";
 import { headToHead as hh } from "@/lib/copy";
-import { useCanvasEligible } from "./headtohead/useEligible";
-
-/**
- * The 3D reconstruction stage (Phase 3a) — lazy + client-only via `ssr: false`,
- * so three/R3F load only when an eligible desktop reconstructs and never enter
- * the initial bundle / LCP path. Ineligible clients (mobile / reduced-motion /
- * no-WebGL) never reference it and keep the 2D reveal below as the full fallback.
- */
-const Reconstruction3D = dynamic(
-  () => import("./headtohead/Reconstruction3D").then((m) => m.Reconstruction3D),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="mb-5 flex h-72 items-center justify-center rounded-lg border border-ground-line bg-ground text-[12px] text-ink-faint">
-        Loading reconstruction…
-      </div>
-    ),
-  },
-);
+import { ReconstructionVideo } from "./headtohead/ReconstructionVideo";
 
 /**
  * THE HEAD-TO-HEAD (brief §5 — the centerpiece). A flat rosbag timeline the
  * visitor scrubs (status quo) vs. a curated Torsen reconstruction, racing on
- * time-to-root-cause. 2D only; a later phase swaps the right panel's body for a
- * 3D scene without touching this state machine.
+ * time-to-root-cause. The revealed right panel carries a rendered-clip stage
+ * (ReconstructionVideo) atop the curated 2D payload — the 2D signals + grounded
+ * why remain the truth surface; the stage can be swapped (video / live 3D)
+ * without touching this state machine.
  *
  * Honesty: the left "you" clock is the visitor's OWN real scrub time (starts on
  * their first scrub, not on scroll-in — counting passive time would rig the
@@ -100,16 +83,12 @@ type Phase = "idle" | "hunting" | "reconstructed";
 
 export function HeadToHead() {
   const reduce = useReducedMotion();
-  const canvas3D = useCanvasEligible();
   const [phase, setPhase] = useState<Phase>("idle");
   const [scrub, setScrub] = useState(0); // 0..1000
   const clock = useWallClock();
   const resultRef = useRef<HTMLDivElement>(null);
   const pct = scrub / 1000;
   const revealed = phase === "reconstructed";
-  // Mount the WebGL stage atop the 2D reveal only for eligible desktops; the 2D
-  // signals + grounded why stay below as the universal, accessible fallback.
-  const show3D = revealed && !reduce && canvas3D;
 
   const onScrubStart = useCallback(() => {
     setPhase((p) => (p === "idle" ? "hunting" : p));
@@ -302,7 +281,8 @@ export function HeadToHead() {
                   initial="hidden"
                   animate="show"
                 >
-                  {show3D && <Reconstruction3D />}
+                  {/* The rendered-clip stage; the signals + why below stay the truth surface. */}
+                  <ReconstructionVideo reduce={!!reduce} />
 
                   <motion.p variants={item} className="font-mono text-[11px] text-ink-faint">
                     {hh.reconstruction.caption}
