@@ -359,13 +359,6 @@ export const footer = {
   privacyLabel: "Privacy",
   privacyHref: "/privacy/",
   copyright: "© 2026 Torsen. All rights reserved.",
-  // CC BY 4.0 attribution for the figure in the head-to-head stage. The poster
-  // (and the clip seeded from it) are RENDERS of Cesium's "RiggedFigure" —
-  // renders are adaptations, so the credit is owed even with the GLB removed.
-  // Drop this only if the stage is regenerated from a non-CC-BY figure.
-  credit: "Reconstruction figure: “RiggedFigure” by Cesium —",
-  creditLicense: "CC BY 4.0",
-  creditLicenseHref: "https://creativecommons.org/licenses/by/4.0/",
 } as const;
 
 export const privacy = {

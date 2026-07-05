@@ -47,19 +47,6 @@ export function Footer() {
           <span className="font-mono text-[13px] text-ink-dim">{site.domain}</span>
           <p className="text-[13px] text-ink-dim">{footer.copyright}</p>
         </div>
-        {/* CC BY 4.0 attribution — the head-to-head stage renders Cesium's figure. */}
-        <p className="mt-4 font-mono text-[11px] leading-relaxed text-ink-faint">
-          {footer.credit}{" "}
-          <a
-            href={footer.creditLicenseHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="focus-ring underline decoration-ink-faint/40 underline-offset-2 transition-colors hover:text-ink-dim"
-          >
-            {footer.creditLicense}
-          </a>
-          .
-        </p>
       </Container>
     </footer>
   );

@@ -41,7 +41,7 @@ export function ReconstructionVideo({ reduce }: { reduce: boolean }) {
         {still ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src="/headtohead/reconstruction-poster.png"
+            src="/headtohead/reconstruction-poster.jpg"
             alt=""
             className="h-full w-full object-cover"
           />
@@ -49,7 +49,7 @@ export function ReconstructionVideo({ reduce }: { reduce: boolean }) {
           <video
             className="h-full w-full object-cover"
             src="/headtohead/reconstruction.mp4"
-            poster="/headtohead/reconstruction-poster.png"
+            poster="/headtohead/reconstruction-poster.jpg"
             muted
             loop
             playsInline
