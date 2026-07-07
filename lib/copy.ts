@@ -680,6 +680,8 @@ export const headToHead = {
  *     "export" (glyph lookup); `live` marks the tabs that respond.
  *   - viewport.chipRender is the in-frame honesty chip — it stays in-frame in
  *     every viewport state (poster and clip alike).
+ *   - ask.* is CHROME only — the askable questions, answers and searchable
+ *     moments live in the case record (they are curated content, not copy).
  */
 export const caseDemo = {
   meta: {
@@ -705,6 +707,17 @@ export const caseDemo = {
   scrubber: {
     divergenceLabel: "First divergence",
     hint: "Scrub the incident timeline",
+  },
+  ask: {
+    placeholder: "Ask the record…",
+    label: "Ask the record",
+    answersHeading: "Answers",
+    momentsHeading: "Moments",
+    suggestedHeading: "This record answers",
+    groundedTag: "grounded",
+    // The honest miss — the demo answers only from the curated set, and says so.
+    fallback: "Not in this record — the curated set answers these:",
+    dismiss: "Clear",
   },
   events: { heading: "Events" },
   diagnosis: {

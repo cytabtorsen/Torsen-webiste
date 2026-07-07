@@ -1,5 +1,11 @@
 import { caseDemo as cd } from "@/lib/copy";
-import { caseRecord as rec, fmtRel, type CaseSignal, type CaseEventKind } from "@/lib/case-record";
+import {
+  caseRecord as rec,
+  fmtRel,
+  type CaseSignal,
+  type CaseEventKind,
+  type CaseFocus,
+} from "@/lib/case-record";
 
 /**
  * THE REPLAY VIEW — viewport · time axis · four signal lanes, one shared
@@ -70,9 +76,18 @@ function Lane({ signal }: { signal: CaseSignal }) {
   );
 }
 
-export function ReplayView({ t, onScrub }: { t: number; onScrub: (t: number) => void }) {
+export function ReplayView({
+  t,
+  onScrub,
+  focus,
+}: {
+  t: number;
+  onScrub: (t: number) => void;
+  /** The amber projection a query/moment lights on its grounding lane. */
+  focus: CaseFocus | null;
+}) {
   return (
-    <section className="flex min-w-0 flex-1 flex-col gap-5 p-5 lg:overflow-y-auto">
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-5">
       {/* ── The viewport — the rendered incident stage ── */}
       <figure
         role="img"
@@ -151,8 +166,18 @@ export function ReplayView({ t, onScrub }: { t: number; onScrub: (t: number) => 
           </div>
 
           {rec.signals.map((s) => (
-            <div key={s.id} className="min-h-14 flex-1 basis-0 border-t border-ground-line/70">
+            <div key={s.id} className="relative min-h-14 flex-1 basis-0 border-t border-ground-line/70">
               <Lane signal={s} />
+              {focus?.signalId === s.id && (
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 border-x border-amber/30 bg-amber/[0.07]"
+                  style={{
+                    left: `${fracOf(Math.max(T0, focus.window[0])) * 100}%`,
+                    width: `${((Math.min(T1, focus.window[1]) - Math.max(T0, focus.window[0])) / SPAN) * 100}%`,
+                  }}
+                />
+              )}
             </div>
           ))}
 
@@ -199,6 +224,6 @@ export function ReplayView({ t, onScrub }: { t: number; onScrub: (t: number) => 
           ))}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

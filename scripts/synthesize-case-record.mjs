@@ -125,6 +125,110 @@ const record = {
     { t: 16.1, kind: "warn", label: "Replan attempt 2 — corridor still blocked" },
     { t: 24.0, kind: "failure", label: "Task abandoned — HOLD, awaiting operator" },
   ],
+  // Curated, searchable moments — the "visual search" index. Each grounds in
+  // one signal over a window; selecting one jumps the playhead there.
+  moments: [
+    { t: -18.4, label: "Waypoint W-3 — nominal cruise", signalId: "velocity", window: [-22, -15] },
+    { t: -8.2, label: "Corridor entry — speed capped", signalId: "velocity", window: [-10.5, -6] },
+    { t: -3.0, label: "Obstacle enters the laser field", signalId: "laserMin", window: [-5, -1] },
+    { t: 0.0, label: "First divergence — velocity departs plan", signalId: "velocity", window: [-1, 2] },
+    { t: 1.6, label: "Recovery behavior — replan requested", signalId: "velocity", window: [0.5, 4] },
+    { t: 8.7, label: "Replan creep — corridor still blocked", signalId: "laserMin", window: [7, 11] },
+    { t: 24.0, label: "Task abandoned — HOLD", signalId: "velocity", window: [21, 27] },
+  ],
+  // The askable set — questions this record can answer, each grounded in
+  // signals with timestamps. HONESTY: the demo answers ONLY from this set;
+  // anything else gets the in-product "not in this record" fallback. The real
+  // pipeline curates these the same way it curates signals.
+  queries: [
+    {
+      id: "why-stop",
+      q: "Why did the robot stop?",
+      aliases: ["why did it stop", "why halt", "why stuck", "root cause", "what happened", "cause", "why blocked"],
+      answer:
+        "The path was blocked. Laser min. distance fell from ~3.2 m to 0.42 m in the three seconds before first divergence; velocity departed the nominal profile at 00:00 and reached zero 0.9 s later.",
+      grounding: [
+        { t: -3.0, signalId: "laserMin", text: "Laser min. distance 3.2 m → 0.42 m" },
+        { t: 0.9, signalId: "velocity", text: "Velocity 0 — motion stalled" },
+      ],
+      jumpTo: 0,
+      highlight: { signalId: "laserMin", window: [-3, 1] },
+    },
+    {
+      id: "obstacle-when",
+      q: "When did the obstacle appear?",
+      aliases: ["obstacle", "pallet", "blocked", "laser", "what blocked the path", "when blocked"],
+      answer:
+        "3.0 s before first divergence (bag clock 00:13:39.31) the laser field picked up an obstruction in the pick-approach corridor and min. distance began falling.",
+      grounding: [{ t: -3.0, signalId: "laserMin", text: "Min. distance begins falling" }],
+      jumpTo: -3,
+      highlight: { signalId: "laserMin", window: [-4.5, 0] },
+    },
+    {
+      id: "battery",
+      q: "Was the battery a factor?",
+      aliases: ["battery", "power", "charge", "voltage", "energy"],
+      answer:
+        "No. The battery lane never diverged — 76.4% at window start, 76.2% at window end, a nominal drain profile throughout.",
+      grounding: [{ t: 0, signalId: "battery", text: "Nominal drain, no divergence" }],
+      jumpTo: 0,
+      highlight: { signalId: "battery", window: [-30, 30] },
+    },
+    {
+      id: "first-divergence",
+      q: "What was the first divergence?",
+      aliases: ["divergence", "first divergence", "when did it diverge", "depart nominal", "where did it go wrong"],
+      answer:
+        "At 00:13:42.31 the measured velocity departed the nominal approach profile — the earliest point where actual behavior left the plan. Every timestamp on this page is relative to it.",
+      grounding: [{ t: 0, signalId: "velocity", text: "Velocity departs nominal profile" }],
+      jumpTo: 0,
+      highlight: { signalId: "velocity", window: [-1, 2] },
+    },
+    {
+      id: "recovery",
+      q: "Did the robot try to recover?",
+      aliases: ["recover", "recovery", "replan", "retry", "try again", "self correct"],
+      answer:
+        "Yes — recovery behavior triggered 1.6 s after divergence and the planner attempted two replans (+8.7 s, +16.1 s). Both creep attempts stalled against the same obstruction.",
+      grounding: [
+        { t: 1.6, signalId: null, text: "Recovery behavior triggered" },
+        { t: 8.7, signalId: "velocity", text: "Replan creep, blocked" },
+        { t: 16.1, signalId: "velocity", text: "Replan creep, blocked" },
+      ],
+      jumpTo: 8.7,
+      highlight: { signalId: "velocity", window: [6, 18] },
+    },
+    {
+      id: "contact",
+      q: "Did it hit the obstacle?",
+      aliases: ["hit", "collision", "crash", "impact", "contact", "touch", "damage"],
+      answer:
+        "No contact. The stop completed 0.42 m short of the obstruction, and laser min. distance holds at that floor for the rest of the window.",
+      grounding: [{ t: 0.9, signalId: "laserMin", text: "Min. distance floor 0.42 m, held" }],
+      jumpTo: 0.9,
+      highlight: { signalId: "laserMin", window: [0, 24] },
+    },
+    {
+      id: "task",
+      q: "What task was it running?",
+      aliases: ["task", "mission", "job", "what was it doing", "pick", "approach"],
+      answer:
+        "APPROACH_PICK toward pick station P-07, dispatched 30 s before first divergence under policy warehouse-nav v2.4.1.",
+      grounding: [{ t: -30, signalId: null, text: "Task dispatched" }],
+      jumpTo: -30,
+      highlight: null,
+    },
+    {
+      id: "outcome",
+      q: "How did the task end?",
+      aliases: ["end", "outcome", "result", "abandoned", "hold", "operator", "resolution"],
+      answer:
+        "Abandoned 24 s after divergence — the robot entered HOLD awaiting an operator, with the corridor still blocked.",
+      grounding: [{ t: 24, signalId: null, text: "HOLD — awaiting operator" }],
+      jumpTo: 24,
+      highlight: { signalId: "velocity", window: [21, 27] },
+    },
+  ],
   diagnosis: {
     likelyCause: "Path blocked",
     evidence: [

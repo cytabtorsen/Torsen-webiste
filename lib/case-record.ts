@@ -30,6 +30,27 @@ export type CaseEvent = { t: number; kind: CaseEventKind; label: string };
 
 export type CaseEvidence = { t: number; signalId: string | null; text: string };
 
+/** An amber projection onto one lane — what a query or moment lights up. */
+export type CaseFocus = { signalId: string; window: [number, number] };
+
+/** A curated, searchable moment — the "visual search" index entry. */
+export type CaseMoment = { t: number; label: string; signalId: string; window: [number, number] };
+
+/**
+ * An askable question: the record answers ONLY from this curated set, each
+ * answer grounded in signals with timestamps (honesty — no open-ended
+ * generation in the demo, and none claimed).
+ */
+export type CaseQuery = {
+  id: string;
+  q: string;
+  aliases: string[];
+  answer: string;
+  grounding: CaseEvidence[];
+  jumpTo: number;
+  highlight: CaseFocus | null;
+};
+
 export type CaseRecord = {
   schema: string;
   case: {
@@ -55,6 +76,8 @@ export type CaseRecord = {
   };
   signals: CaseSignal[];
   events: CaseEvent[];
+  moments: CaseMoment[];
+  queries: CaseQuery[];
   diagnosis: {
     likelyCause: string;
     evidence: CaseEvidence[];
