@@ -96,6 +96,9 @@ const record = {
   timeline: {
     spanSeconds: [T0, T1],
     divergenceAt: 0,
+    // Where "replay the incident" starts: cruise → laser drop → divergence in
+    // one ~6 s beat, auto-pausing on the divergence.
+    replayFrom: -6,
     bagClockAtDivergence: "00:13:42.310",
     bagDuration: "00:31:25",
     sampling: "curated 10 Hz",
@@ -108,10 +111,10 @@ const record = {
     },
   },
   signals: [
-    { id: "velocity", label: "Velocity", unit: "m/s", scale: [0, 1.5], series: { t0: T0, dt: DT, values: lane(velocity, nz.velocity, 3) } },
-    { id: "steering", label: "Steering", unit: "deg", scale: [-15, 15], series: { t0: T0, dt: DT, values: lane(steering, nz.steering, 2) } },
-    { id: "laserMin", label: "Laser min. dist.", unit: "m", scale: [0, 5], emphasis: true, series: { t0: T0, dt: DT, values: lane(laserMin, nz.laserMin, 3) } },
-    { id: "battery", label: "Battery", unit: "%", scale: [74, 78], series: { t0: T0, dt: DT, values: lane(battery, nz.battery, 3) } },
+    { id: "velocity", label: "Velocity", unit: "m/s", scale: [0, 1.5], decimals: 2, series: { t0: T0, dt: DT, values: lane(velocity, nz.velocity, 3) } },
+    { id: "steering", label: "Steering", unit: "deg", scale: [-15, 15], decimals: 1, series: { t0: T0, dt: DT, values: lane(steering, nz.steering, 2) } },
+    { id: "laserMin", label: "Laser min. dist.", unit: "m", scale: [0, 5], decimals: 2, emphasis: true, series: { t0: T0, dt: DT, values: lane(laserMin, nz.laserMin, 3) } },
+    { id: "battery", label: "Battery", unit: "%", scale: [74, 78], decimals: 1, series: { t0: T0, dt: DT, values: lane(battery, nz.battery, 3) } },
   ],
   events: [
     { t: -30.0, kind: "info", label: "Task APPROACH_PICK dispatched — pick station P-07" },

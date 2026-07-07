@@ -20,6 +20,8 @@ export type CaseSignal = {
   unit: string;
   /** Lane y-domain [min, max] — each lane owns its scale (small multiples). */
   scale: [number, number];
+  /** Display precision for the live playhead readout. */
+  decimals: number;
   /** The lane the diagnosis leans on — rendered in amber, the failure hue. */
   emphasis?: boolean;
   series: SignalSeries;
@@ -64,6 +66,8 @@ export type CaseRecord = {
   timeline: {
     spanSeconds: [number, number];
     divergenceAt: number;
+    /** Where "replay the incident" starts (auto-pauses on the divergence). */
+    replayFrom: number;
     bagClockAtDivergence: string;
     bagDuration: string;
     sampling: string;

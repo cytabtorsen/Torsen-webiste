@@ -1,22 +1,31 @@
+import { memo, useEffect, useRef } from "react";
 import { caseDemo as cd } from "@/lib/copy";
 import {
   caseRecord as rec,
   fmtRel,
+  valueAt,
   type CaseSignal,
   type CaseEventKind,
   type CaseFocus,
 } from "@/lib/case-record";
 
 /**
- * THE REPLAY VIEW — viewport · time axis · four signal lanes, one shared
- * playhead. The lanes are small multiples: each owns its y-scale, identity is
- * carried by lane position + label (teal traces; amber only for the lane the
- * diagnosis leans on — the site's failure hue).
+ * THE REPLAY VIEW — viewport · transport · time axis · four signal lanes, one
+ * shared playhead. The lanes are small multiples: each owns its y-scale,
+ * identity is carried by lane position + label (teal traces; amber only for
+ * the lane the diagnosis leans on — the site's failure hue). The scale gutter
+ * carries a live readout of each lane's value at the playhead.
  *
  * The viewport is poster-first: the rendered incident clip is generated
- * offline and dropped into public/case/; until then (and outside the clip's
- * window once it lands) the stage holds the poster frame.
+ * offline and dropped into public/case/ (build flag NEXT_PUBLIC_CASE_VIDEO —
+ * same idiom as the head-to-head clip). Once it lands, the clip covers ONLY
+ * the record's incident window around first divergence, scrub-synced; the
+ * poster holds every other instant. The playhead line hides while it sits
+ * exactly on the divergence marker — that instant belongs to the amber.
  */
+
+const HAS_CLIP = process.env.NEXT_PUBLIC_CASE_VIDEO === "true";
+const [W0, W1] = rec.timeline.clip.windowSeconds;
 
 const [T0, T1] = rec.timeline.spanSeconds;
 const SPAN = T1 - T0;
@@ -52,7 +61,8 @@ const EVENT_DOT: Record<CaseEventKind, string> = {
   failure: "bg-amber",
 };
 
-function Lane({ signal }: { signal: CaseSignal }) {
+// Memoized: the trace never changes; the playhead re-renders 60×/s around it.
+const Lane = memo(function Lane({ signal }: { signal: CaseSignal }) {
   const { values } = signal.series;
   const [lo, hi] = signal.scale;
   const points = values
@@ -74,18 +84,43 @@ function Lane({ signal }: { signal: CaseSignal }) {
       />
     </svg>
   );
-}
+});
 
 export function ReplayView({
   t,
-  onScrub,
+  playing,
   focus,
+  onScrub,
+  onToggle,
+  onReplay,
 }: {
   t: number;
-  onScrub: (t: number) => void;
+  playing: boolean;
   /** The amber projection a query/moment lights on its grounding lane. */
   focus: CaseFocus | null;
+  onScrub: (t: number) => void;
+  onToggle: () => void;
+  onReplay: () => void;
 }) {
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const inWindow = HAS_CLIP && t >= W0 && t <= W1;
+  const atDivergence = Math.abs(t - rec.timeline.divergenceAt) < 0.05;
+
+  // Keep the clip glued to the scrubber inside its window: seek when scrubbed,
+  // play when playing, poster everywhere else (the `hidden` toggle below).
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    const target = Math.min(Math.max(t - W0, 0), W1 - W0);
+    if (playing && inWindow) {
+      if (Math.abs(v.currentTime - target) > 0.35) v.currentTime = target;
+      if (v.paused) v.play().catch(() => {});
+    } else {
+      if (!v.paused) v.pause();
+      if (Math.abs(v.currentTime - target) > 0.05) v.currentTime = target;
+    }
+  }, [t, playing, inWindow]);
+
   return (
     <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-5">
       {/* ── The viewport — the rendered incident stage ── */}
@@ -97,6 +132,17 @@ export function ReplayView({
         <div className="relative h-36 sm:h-44">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={rec.timeline.clip.poster} alt="" className="h-full w-full object-cover" />
+          {HAS_CLIP && (
+            <video
+              ref={videoRef}
+              src={rec.timeline.clip.src}
+              muted
+              playsInline
+              preload="auto"
+              aria-hidden="true"
+              className={`absolute inset-0 h-full w-full object-cover ${inWindow ? "" : "hidden"}`}
+            />
+          )}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-ground/80 to-transparent"
@@ -120,9 +166,39 @@ export function ReplayView({
           Every column stacks a fixed axis spacer + four flex-1 basis-0 cells,
           so the lanes stretch to fill the frame and the gutters stay aligned. */}
       <div className="flex min-h-0 flex-1">
-        {/* label gutter */}
+        {/* label gutter — the axis spacer carries the transport */}
         <div className="hidden w-40 shrink-0 flex-col sm:flex">
-          <div className="h-12 shrink-0" />
+          <div className="flex h-12 shrink-0 items-center gap-1.5 pr-3">
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-label={playing ? cd.transport.pause : cd.transport.play}
+              className="focus-ring flex h-8 w-8 items-center justify-center rounded-lg border border-ground-line bg-ground-raised text-ink transition-colors hover:border-teal/40 hover:text-teal"
+            >
+              {playing ? (
+                <svg aria-hidden="true" viewBox="0 0 16 16" className="h-3.5 w-3.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <line x1="6" y1="4" x2="6" y2="12" />
+                  <line x1="10" y1="4" x2="10" y2="12" />
+                </svg>
+              ) : (
+                <svg aria-hidden="true" viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="currentColor">
+                  <polygon points="5.5 3.5 13 8 5.5 12.5" />
+                </svg>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={onReplay}
+              aria-label={cd.transport.replay}
+              title={cd.transport.replay}
+              className="focus-ring flex h-8 w-8 items-center justify-center rounded-lg border border-ground-line bg-ground-raised text-ink-dim transition-colors hover:border-amber/40 hover:text-amber"
+            >
+              <svg aria-hidden="true" viewBox="0 0 16 16" className="h-3.5 w-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="4" y1="3.5" x2="4" y2="12.5" />
+                <polygon points="12.5 4 6.8 8 12.5 12" fill="currentColor" stroke="none" />
+              </svg>
+            </button>
+          </div>
           {rec.signals.map((s) => (
             <div key={s.id} className="flex min-h-14 flex-1 basis-0 items-center pr-3">
               <span className={`font-mono text-[11px] leading-tight ${s.emphasis ? "text-amber" : "text-teal/90"}`}>
@@ -187,12 +263,15 @@ export function ReplayView({
             className="pointer-events-none absolute bottom-0 top-6 w-[2px] -translate-x-1/2 bg-amber/90 shadow-[0_0_10px_rgba(255,180,84,0.7)]"
             style={{ left: `${DIV_FRAC * 100}%` }}
           />
-          {/* the playhead */}
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-y-0 w-px bg-teal/70 shadow-[0_0_8px_rgba(22,199,154,0.55)]"
-            style={{ left: `${fracOf(t) * 100}%` }}
-          />
+          {/* the playhead — hidden while it sits exactly on the divergence
+              marker: that instant belongs to the amber */}
+          {!atDivergence && (
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-y-0 w-px bg-teal/70 shadow-[0_0_8px_rgba(22,199,154,0.55)]"
+              style={{ left: `${fracOf(t) * 100}%` }}
+            />
+          )}
 
           <label htmlFor="case-scrub" className="sr-only">
             {cd.scrubber.hint}
@@ -210,7 +289,7 @@ export function ReplayView({
           />
         </div>
 
-        {/* per-lane scale gutter */}
+        {/* per-lane scale gutter: max / LIVE READOUT at the playhead / min */}
         <div className="flex w-12 shrink-0 flex-col">
           <div className="h-12 shrink-0" />
           {rec.signals.map((s) => (
@@ -219,6 +298,9 @@ export function ReplayView({
               className="flex min-h-14 flex-1 basis-0 flex-col items-end justify-between py-1 pl-2 font-mono text-[9px] tabular-nums text-ink-faint/80"
             >
               <span>{s.scale[1]}</span>
+              <span className={`text-[10px] ${s.emphasis ? "text-amber" : "text-ink"}`}>
+                {valueAt(s.series, t).toFixed(s.decimals)}
+              </span>
               <span>{s.scale[0]}</span>
             </div>
           ))}

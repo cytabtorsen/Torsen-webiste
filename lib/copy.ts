@@ -720,6 +720,11 @@ export const caseDemo = {
     dismiss: "Clear",
   },
   events: { heading: "Events" },
+  transport: {
+    play: "Play",
+    pause: "Pause",
+    replay: "Replay the incident",
+  },
   diagnosis: {
     heading: "Diagnosis",
     likelyCause: "Likely cause:",

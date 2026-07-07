@@ -16,6 +16,9 @@ const nextConfig = {
     // exists, the stage renders the poster only — no <video>, no 404 per reveal.
     // Committing the mp4 and rebuilding flips this on; no code change needed.
     NEXT_PUBLIC_HH_VIDEO: String(existsSync("public/headtohead/reconstruction.mp4")),
+    // Same drop-in flow for the /case incident clip (see the Seedance pack,
+    // "Clip 2"). Until the mp4 exists, the /case viewport is poster-only.
+    NEXT_PUBLIC_CASE_VIDEO: String(existsSync("public/case/incident.mp4")),
   },
 };
 

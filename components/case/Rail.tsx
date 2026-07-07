@@ -8,6 +8,8 @@ import { caseRecord } from "@/lib/case-record";
  * nothing dead-clicks at a booth.
  */
 
+export type RailView = "replay" | "events";
+
 const GLYPHS: Record<string, React.ReactNode> = {
   replay: <polygon points="6 4 13 8 6 12" />,
   timeline: (
@@ -33,7 +35,7 @@ const GLYPHS: Record<string, React.ReactNode> = {
   ),
 };
 
-export function Rail() {
+export function Rail({ view, onView }: { view: RailView; onView: (v: RailView) => void }) {
   return (
     <aside className="flex shrink-0 flex-col border-b border-ground-line lg:w-56 lg:border-b-0 lg:border-r">
       <div className="px-5 pb-4 pt-5">
@@ -43,12 +45,13 @@ export function Rail() {
 
       <nav aria-label={cd.rail.product} className="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-1 lg:flex-col lg:overflow-visible lg:pb-0">
         {cd.rail.items.map((item) => {
-          const active = item.id === "replay";
+          const active = item.id === view;
           return (
             <button
               key={item.id}
               type="button"
               disabled={!item.live}
+              onClick={item.live ? () => onView(item.id as RailView) : undefined}
               aria-current={active ? "page" : undefined}
               className={`focus-ring flex shrink-0 items-center gap-3 rounded-lg px-3 py-2 text-left text-[13px] transition-colors ${
                 active

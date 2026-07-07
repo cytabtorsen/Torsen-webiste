@@ -22,6 +22,7 @@
   "timeline": {
     "spanSeconds": [-30, 30],
     "divergenceAt": 0,
+    "replayFrom": -6,
     "bagClockAtDivergence": "00:13:42.310",
     "bagDuration": "00:31:25",
     "sampling": "curated 10 Hz",
@@ -37,6 +38,7 @@
       "label": "Velocity",
       "unit": "m/s",
       "scale": [0, 1.5],
+      "decimals": 2,
       "series": {
         "t0": -30,
         "dt": 0.1,
@@ -48,6 +50,7 @@
       "label": "Steering",
       "unit": "deg",
       "scale": [-15, 15],
+      "decimals": 1,
       "series": {
         "t0": -30,
         "dt": 0.1,
@@ -59,6 +62,7 @@
       "label": "Laser min. dist.",
       "unit": "m",
       "scale": [0, 5],
+      "decimals": 2,
       "emphasis": true,
       "series": {
         "t0": -30,
@@ -71,6 +75,7 @@
       "label": "Battery",
       "unit": "%",
       "scale": [74, 78],
+      "decimals": 1,
       "series": {
         "t0": -30,
         "dt": 0.1,
