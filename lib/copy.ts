@@ -660,3 +660,59 @@ export const headToHead = {
     caption: "The left clock is your own time, scrubbing right now. The right is a representative Torsen reconstruction time.",
   },
 } as const;
+
+/**
+ * /case — THE INCIDENT REPLAY (the pitch deck’s product UI, made real).
+ * A hidden route: noindex, linked from nowhere, shown at events from the local
+ * static build. This block is CHROME copy only — everything case-specific
+ * (signals, events, evidence, diagnosis) lives in data/case-record.json, the
+ * same record shape the witness pipeline will emit from a real recording.
+ * Template over JSON is load-bearing: fictive record now, real record later,
+ * no redesign.
+ *
+ * HONESTY — the page is labelled representative/synthetic in-frame, and the
+ * viewport clip is a RENDER (never “generated / AI / vendor” in public copy).
+ * Witness discipline: the panel recommends a next INSPECTION, never a fix;
+ * Torsen shows, the team acts.
+ *
+ * STRUCTURAL INVARIANTS — components parse these; do not break:
+ *   - rail.items ids stay "replay" / "timeline" / "signals" / "events" /
+ *     "export" (glyph lookup); `live` marks the tabs that respond.
+ *   - viewport.chipRender is the in-frame honesty chip — it stays in-frame in
+ *     every viewport state (poster and clip alike).
+ */
+export const caseDemo = {
+  meta: {
+    title: "Incident replay — representative case",
+    description:
+      "A representative Torsen incident replay — synthetic data, labelled as such.",
+  },
+  rail: {
+    product: "Incident replay",
+    items: [
+      { id: "replay", label: "Replay", live: true },
+      { id: "timeline", label: "Timeline", live: false },
+      { id: "signals", label: "Signals", live: false },
+      { id: "events", label: "Events", live: true },
+      { id: "export", label: "Export", live: false },
+    ],
+    provenance: "source opened read-only · 0 bytes written to origin",
+  },
+  viewport: {
+    chipRender: "render · representative",
+    speed: "1.0×",
+  },
+  scrubber: {
+    divergenceLabel: "First divergence",
+    hint: "Scrub the incident timeline",
+  },
+  events: { heading: "Events" },
+  diagnosis: {
+    heading: "Diagnosis",
+    likelyCause: "Likely cause:",
+    evidence: "Evidence at divergence:",
+    nextAction: "Next action",
+  },
+  disclaimer:
+    "Representative case — synthetic data, rendered reconstruction; not a real customer incident.",
+} as const;
