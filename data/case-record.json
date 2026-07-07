@@ -394,6 +394,19 @@
       }
     }
   ],
+  "workflow": {
+    "status": "UNRESOLVED",
+    "ticket": {
+      "ref": "TOR-214",
+      "state": "synced"
+    },
+    "resolveIn": "v2.4.2",
+    "checklist": [
+      "Aisle clearance at the pick approach",
+      "Pallet position at station P-07",
+      "Load alignment on the inbound rack"
+    ]
+  },
   "diagnosis": {
     "likelyCause": "Path blocked",
     "evidence": [

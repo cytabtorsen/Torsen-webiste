@@ -82,6 +82,17 @@ export type CaseRecord = {
   events: CaseEvent[];
   moments: CaseMoment[];
   queries: CaseQuery[];
+  /**
+   * The workflow face of the case — the docket around the sealed evidence.
+   * Every action is the team acting on its own systems; none touches the robot.
+   */
+  workflow: {
+    status: "UNRESOLVED";
+    ticket: { ref: string; state: string };
+    /** The version a resolution binds to — "fixed" as a falsifiable claim. */
+    resolveIn: string;
+    checklist: string[];
+  };
   diagnosis: {
     likelyCause: string;
     evidence: CaseEvidence[];

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { caseRecord, type CaseFocus, type CaseMoment, type CaseQuery } from "@/lib/case-record";
 import { Rail, type RailView } from "./Rail";
+import { CaseHeader, type CaseStatus } from "./CaseHeader";
 import { AskBar, AnswerCard } from "./AskBar";
 import { ReplayView } from "./ReplayView";
 import { EventsView } from "./EventsView";
@@ -34,6 +35,14 @@ export function CaseReplay() {
   const [view, setView] = useState<RailView>("replay");
   const [answer, setAnswer] = useState<CaseQuery | null>(null);
   const [focus, setFocus] = useState<CaseFocus | null>(null);
+  // The action arc: assign → inspect (checklist) → bind the resolution.
+  // Deliberately local state — a reload resets the booth demo to UNRESOLVED.
+  const [assigned, setAssigned] = useState(false);
+  const [checked, setChecked] = useState<boolean[]>(() =>
+    caseRecord.workflow.checklist.map(() => false),
+  );
+  const [resolved, setResolved] = useState(false);
+  const status: CaseStatus = resolved ? "resolved" : assigned ? "assigned" : "unresolved";
   const tRef = useRef(t);
   tRef.current = t;
 
@@ -119,6 +128,7 @@ export function CaseReplay() {
     <main className="flex min-h-dvh flex-col bg-ground text-ink lg:h-dvh lg:flex-row lg:overflow-hidden">
       <Rail view={view} onView={setView} />
       <section className="flex min-w-0 flex-1 flex-col gap-4 p-5 lg:overflow-y-auto">
+        <CaseHeader status={status} onAssign={() => setAssigned(true)} />
         <AskBar onAnswer={onAnswer} onMoment={onMoment} />
         {view === "replay" ? (
           <>
@@ -141,7 +151,12 @@ export function CaseReplay() {
           />
         )}
       </section>
-      <DiagnosisPanel />
+      <DiagnosisPanel
+        checked={checked}
+        onToggleItem={(i) => setChecked((c) => c.map((v, k) => (k === i ? !v : v)))}
+        resolved={resolved}
+        onResolve={() => setResolved(true)}
+      />
     </main>
   );
 }

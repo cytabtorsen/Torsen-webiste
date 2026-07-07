@@ -232,6 +232,20 @@ const record = {
       highlight: { signalId: "velocity", window: [21, 27] },
     },
   ],
+  // The workflow face of the case — the docket that grows AROUND the sealed
+  // evidence. Witness discipline: every action here is the TEAM acting on its
+  // own systems (assign, inspect, ticket, resolve); none touches the robot.
+  workflow: {
+    status: "UNRESOLVED",
+    ticket: { ref: "TOR-214", state: "synced" },
+    // The version a resolution binds to — "fixed" as a falsifiable claim.
+    resolveIn: "v2.4.2",
+    checklist: [
+      "Aisle clearance at the pick approach",
+      "Pallet position at station P-07",
+      "Load alignment on the inbound rack",
+    ],
+  },
   diagnosis: {
     likelyCause: "Path blocked",
     evidence: [

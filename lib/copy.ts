@@ -725,6 +725,23 @@ export const caseDemo = {
     pause: "Pause",
     replay: "Replay the incident",
   },
+  // The action layer — the case as a work item. Witness discipline: every
+  // verb here is the TEAM acting on its own systems (assign, inspect, file,
+  // resolve); Torsen only records and watches. Never robot-control language.
+  workflow: {
+    statusUnresolved: "Unresolved",
+    statusAssigned: "Assigned",
+    statusResolvedIn: "Resolved in",
+    assignCta: "Assign to me",
+    assignedYou: "you",
+    checklistShow: "Open checklist",
+    checklistHide: "Hide checklist",
+    resolveCta: "Mark resolved in",
+    boundTo: "Resolution bound to",
+    watched: "Torsen watches every future policy version for recurrence.",
+    ticketCaption: "Synced to your tracker — Torsen never writes your ticket text.",
+    ticketResolvedState: "resolved",
+  },
   diagnosis: {
     heading: "Diagnosis",
     likelyCause: "Likely cause:",
