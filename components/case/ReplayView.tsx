@@ -140,6 +140,16 @@ export function ReplayView({
               playsInline
               preload="auto"
               aria-hidden="true"
+              // Cold-load insurance: the effect above seeks on mount, but a set
+              // before the media is seekable is dropped — so re-apply the seek
+              // the moment data arrives, or the divergence frame flashes the
+              // pre-incident approach instead of the halt.
+              onLoadedData={() => {
+                const v = videoRef.current;
+                if (!v || playing) return;
+                const target = Math.min(Math.max(t - W0, 0), W1 - W0);
+                if (Math.abs(v.currentTime - target) > 0.05) v.currentTime = target;
+              }}
               className={`absolute inset-0 h-full w-full object-cover ${inWindow ? "" : "hidden"}`}
             />
           )}
