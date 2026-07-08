@@ -1,0 +1,83 @@
+{
+  "schema": "torsen.fleet-record/v1",
+  "site": { "id": "SITE-NW-04", "label": "Fulfillment · Northwest 04", "robotsMonitored": 41 },
+  "recordedAt": "2026-06-30T12:43:02Z",
+  "stats": {
+    "incidentsToday": 24,
+    "openCases": 6,
+    "reconstructing": 3,
+    "medianTtrc": "2.4 days"
+  },
+  "histogram": {
+    "bars": [0, 1, 0, 0, 1, 2, 1, 3, 2, 1, 2, 4, 3, 2, 1, 2, 3, 1, 2, 1, 0, 1, 0, 1]
+  },
+  "robots": [
+    { "id": "AMR-12", "class": "AMR", "incidents": 3, "status": "open", "spark": [1, 0, 1, 2, 1, 2, 3, 2, 4, 3, 5, 4] },
+    { "id": "LIFT-04", "class": "Forklift AMR", "incidents": 2, "status": "reconstructing", "spark": [0, 1, 1, 0, 2, 1, 2, 1, 3, 2, 2, 3] },
+    { "id": "CELL-07", "class": "Work cell", "incidents": 1, "status": "reconstructing", "spark": [0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 2, 1] },
+    { "id": "AMR-07", "class": "AMR", "incidents": 1, "status": "resolved", "spark": [2, 3, 2, 1, 2, 1, 1, 0, 1, 0, 0, 0] }
+  ],
+  "cases": [
+    {
+      "ref": "TSN-2026-0630-0417",
+      "robotId": "AMR-12",
+      "policy": "warehouse-nav v2.4.1",
+      "task": "Approach pick station P-07",
+      "firstDivergence": "Path blocked",
+      "openedAt": "12:43:02",
+      "status": "unresolved",
+      "ttrc": null,
+      "href": "/case"
+    },
+    {
+      "ref": "TSN-2026-0630-0389",
+      "robotId": "LIFT-04",
+      "policy": "pallet-handling v1.8.0",
+      "task": "Fork insert at bay B-12",
+      "firstDivergence": "reconstructing",
+      "openedAt": "12:21:11",
+      "status": "reconstructing",
+      "stage": "Curating signals",
+      "elapsed": "4m 12s",
+      "ttrc": null,
+      "href": null
+    },
+    {
+      "ref": "TSN-2026-0630-0371",
+      "robotId": "CELL-07",
+      "policy": "pick-place v3.1.2",
+      "task": "Grasp tote at cell 07",
+      "firstDivergence": "reconstructing",
+      "openedAt": "11:50:09",
+      "status": "reconstructing",
+      "stage": "Detecting failure window",
+      "elapsed": "1m 46s",
+      "ttrc": null,
+      "href": null
+    },
+    {
+      "ref": "TSN-2026-0630-0352",
+      "robotId": "AMR-07",
+      "policy": "warehouse-nav v2.4.1",
+      "task": "Transit aisle 9 to dock",
+      "firstDivergence": "Unexpected obstacle",
+      "openedAt": "11:32:44",
+      "status": "resolved",
+      "resolvedIn": "warehouse-nav v2.4.2",
+      "ttrc": "1.9 days",
+      "href": null
+    },
+    {
+      "ref": "TSN-2026-0629-0308",
+      "robotId": "AMR-12",
+      "policy": "warehouse-nav v2.4.1",
+      "task": "Approach pick station P-03",
+      "firstDivergence": "Localization drift",
+      "openedAt": "Yesterday",
+      "status": "resolved",
+      "resolvedIn": "warehouse-nav v2.4.1",
+      "ttrc": "3.1 days",
+      "href": null
+    }
+  ]
+}

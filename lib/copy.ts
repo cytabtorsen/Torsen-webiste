@@ -751,3 +751,56 @@ export const caseDemo = {
   disclaimer:
     "Representative case — synthetic data, rendered reconstruction; not a real customer incident.",
 } as const;
+
+/**
+ * /fleet — the case-index board (the deck's slide-8 INCIDENTS panel, made real).
+ * Screen two of the booth demo: the operator's view across the fleet, drilling
+ * into the single reconstructed case (/case). Witness discipline holds — the
+ * board records and watches; it never acts on a robot. Honest in-progress:
+ * sibling cases are still reconstructing (real elapsed), not fake-instant.
+ */
+export const fleetBoard = {
+  meta: {
+    title: "Fleet incidents — representative site",
+    description:
+      "A representative Torsen fleet case-index — synthetic data, labelled as such.",
+  },
+  rail: {
+    product: "Case index",
+    items: [
+      { id: "overview", label: "Overview", live: true },
+      { id: "cases", label: "Cases", live: true },
+      { id: "fingerprints", label: "Fingerprints", live: false },
+      { id: "policies", label: "Policies", live: false },
+      { id: "export", label: "Export", live: false },
+    ],
+    provenance: "source opened read-only · 0 bytes written to origin",
+  },
+  stats: {
+    incidentsToday: "Incidents today",
+    openCases: "Open cases",
+    reconstructing: "Reconstructing",
+    medianTtrc: "Median time to root cause",
+  },
+  histogram: { heading: "Today", axisNote: "incidents / hour" },
+  roster: { heading: "Fleet", incidentsSuffix: "open" },
+  table: {
+    heading: "Latest incidents",
+    cols: {
+      ref: "Case",
+      robot: "Robot",
+      task: "Task",
+      cause: "First divergence",
+      opened: "Opened",
+      status: "Status",
+    },
+    openCase: "Open replay",
+    reconstructingNote: "Reconstruction takes minutes — Torsen curates, it never guesses.",
+    statusUnresolved: "Unresolved",
+    statusResolvedIn: "Resolved in",
+    statusReconstructing: "Reconstructing",
+  },
+  chipRepresentative: "representative · synthetic",
+  disclaimer:
+    "Representative site — synthetic data; not a real customer fleet. One case is reconstructed; the rest are shown mid-reconstruction or resolved.",
+} as const;
