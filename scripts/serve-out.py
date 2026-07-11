@@ -65,8 +65,12 @@ class RangeHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
 if __name__ == "__main__":
+    # Usage: serve-out.py [port] [host]. Host defaults to 127.0.0.1 (the booth
+    # laptop opens localhost); pass 0.0.0.0 to reach it from another machine or
+    # a Windows browser over WSL2.
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8753
+    host = sys.argv[2] if len(sys.argv) > 2 else "127.0.0.1"
     root = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "out")
     os.chdir(root)
-    print(f"serving {root} on http://127.0.0.1:{port} (range-capable)")
-    ThreadingHTTPServer(("127.0.0.1", port), partial(RangeHandler)).serve_forever()
+    print(f"serving {root} on http://{host}:{port} (range-capable)")
+    ThreadingHTTPServer((host, port), partial(RangeHandler)).serve_forever()
