@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { nav, site } from "@/lib/copy";
+import { LogoMark } from "@/components/Logo";
 
 /** Sticky, translucent nav. Hairline border + blur intensify after scroll.
  *  Mobile (<md) collapses the links into an accessible toggle menu. */
@@ -49,8 +50,7 @@ export function Nav() {
         className="mx-auto flex h-16 w-full max-w-content items-center justify-between px-6 sm:px-8"
       >
         <a href="#top" className="focus-ring flex items-center gap-2.5" aria-label={`${site.name} home`}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-mark.png" alt="" width={26} height={26} decoding="async" className="h-[26px] w-[26px]" />
+          <LogoMark className="h-[26px] w-[26px]" />
           <span className="font-mono text-[15px] font-medium tracking-tight text-ink">{site.name}</span>
         </a>
 

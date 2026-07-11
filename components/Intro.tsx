@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { hero, site } from "@/lib/copy";
+import { LogoMark } from "@/components/Logo";
 
 /**
  * Branded entrance. On the first load of a browser session, the amber
@@ -81,8 +82,7 @@ export function Intro() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/logo-mark.png" alt="" width={30} height={30} className="h-[30px] w-[30px]" />
+            <LogoMark className="h-[30px] w-[30px]" />
             <span className="font-display text-3xl font-semibold tracking-tight text-ink">{site.name}</span>
           </motion.div>
 

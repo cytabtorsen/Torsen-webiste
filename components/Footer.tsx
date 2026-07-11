@@ -1,5 +1,6 @@
 import { Container } from "@/components/Section";
 import { footer, nav, site } from "@/lib/copy";
+import { LogoMark } from "@/components/Logo";
 
 /**
  * Footer. Carries the legitimacy an enterprise buyer looks for before trusting
@@ -14,8 +15,7 @@ export function Footer() {
           {/* Brand + descriptor */}
           <div className="max-w-md">
             <div className="flex items-center gap-2.5">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/logo-mark.png" alt="" width={24} height={24} loading="lazy" decoding="async" className="h-6 w-6" />
+              <LogoMark className="h-6 w-6" />
               <span className="font-mono text-[15px] font-medium tracking-tight text-ink">{site.name}</span>
             </div>
             <p className="mt-4 text-[14px] leading-relaxed text-ink-dim">{footer.descriptor}</p>
