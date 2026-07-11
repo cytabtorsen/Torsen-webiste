@@ -94,20 +94,28 @@ export const product = {
   heading: "One reconstructed case. Not a log dump.",
   sub: "Torsen finds the failure window in a recording you already have, aligns the streams, and replays what the robot perceived, decided, and did — with the first divergence marked. Support gets a case they can read, act on, and hand to anyone.",
   chip: "representative · synthetic data",
-  shots: [
-    {
-      src: "/product/case.png",
-      alt: "The Torsen incident replay: a robot AMR halted at a pick station, four synchronized signal lanes, and a diagnosis panel naming the first divergence.",
-      title: "The incident replay",
-      caption: "Video, four synchronized signals, and the first divergence — in one view.",
-    },
-    {
-      src: "/product/fleet.png",
-      alt: "The Torsen fleet case index: incidents-today stat, per-robot sparklines, and a table of open incidents across the fleet.",
-      title: "The fleet case index",
-      caption: "Every open incident across the fleet, each drilling into its replay.",
-    },
+  primary: {
+    // 2x retina (2880x1800), displayed ~1.5x-density.
+    src: "/product/case.webp",
+    width: 2880,
+    height: 1800,
+    alt: "The Torsen incident replay: an AMR halted at a pick station, four synchronized signal lanes with the first divergence marked, and a diagnosis panel naming the likely cause.",
+    bar: "Torsen · incident replay",
+    ref: "AMR-12 · TSN-2026-0630-0417",
+  },
+  features: [
+    { title: "First divergence", desc: "The exact instant the run left nominal — marked on the timeline." },
+    { title: "Four grounded signals", desc: "Velocity, steering, laser distance, battery — from the recording, not the policy." },
+    { title: "A shareable case", desc: "Diagnosis, evidence, and next action — one record support can act on and hand to anyone." },
   ],
+  secondary: {
+    src: "/product/fleet.webp",
+    width: 2880,
+    height: 1800,
+    alt: "The Torsen fleet case index: incidents-today stat, per-robot sparklines, and a table of open incidents across the fleet.",
+    bar: "Torsen · case index",
+    caption: "And across the fleet — every open incident, each drilling into its replay.",
+  },
 } as const;
 
 /**
