@@ -438,7 +438,7 @@ export const credibility = {
 export const ctaSection = {
   heading: "Bring us your hardest unexplained failure.",
   sub: "We take a handful of incidents at a time. Tell us about a failure your logs couldn’t explain — one you already have a recording of — and we’ll follow up to reconstruct the grounded why with you, founder-to-engineer.",
-  cta: "Apply for a forensics pilot",
+  cta: "Start a pilot",
 } as const;
 
 export const nav = {
@@ -472,7 +472,7 @@ export const privacy = {
   // Honest + minimal. Matches what the form actually does (single email field,
   // handled by Formspree) under the reframed forensics-pilot / keep-me-posted intent.
   body: [
-    "Torsen collects only the email address you submit — whether you’re applying for a forensics pilot or just asking to be kept posted. We use it for one thing: to reply to you about reconstructing a failure, or to update you when there’s something worth sharing.",
+    "Torsen collects only the email address you submit — whether you’re applying for a pilot or just asking to be kept posted. We use it for one thing: to reply to you about reconstructing a failure, or to update you when there’s something worth sharing.",
     "Submissions are handled by Formspree, our form provider, which processes the email on our behalf. We do not sell, rent, or share your address, and we send no marketing.",
     "Want off the list? Email cyrilletabe@torsen.ai and we’ll delete your address.",
   ],
@@ -506,7 +506,7 @@ export const waitlist = {
  * any amount is explicitly optional and ballpark).
  */
 export const pilotForm = {
-  source: "torsen.ai forensics-pilot",
+  source: "torsen.ai pilot",
   submit: "Send us the failure",
   sending: "Sending…",
   error: "Something went wrong sending that. Please try again.",
@@ -582,7 +582,7 @@ export const pilotForm = {
     },
     wtp: {
       label:
-        "If a scoped forensics pilot reconstructed this failure, would a token fee be worth it to you?",
+        "If a scoped Torsen pilot reconstructed this failure, would a token fee be worth it to you?",
       help: "Honest answers help us scope this fairly — there’s no wrong one, and no commitment here.",
       options: [
         { value: "yes", label: "Yes — that’d be worth paying for" },

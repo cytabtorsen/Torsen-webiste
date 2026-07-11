@@ -61,38 +61,42 @@ export function Product() {
         </h2>
         <p className="mt-5 max-w-2xl text-pretty text-lg leading-relaxed text-ink-dim">{product.sub}</p>
 
-        {/* ── primary showcase: the incident replay ── */}
-        <div className="relative mt-14">
+        {/* ── the mirrored pair: both views in one showcase, tilted toward each
+             other, downscaled. Retina keeps them crisp at half size. Flat +
+             stacked on mobile; the 3D tilt is desktop-only and non-essential. ── */}
+        <div className="relative mt-14 [perspective:2200px]">
           {/* quiet ambient depth — static, low-opacity (per the motion budget) */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -inset-x-8 -inset-y-6 -z-10 rounded-[2.5rem] bg-[radial-gradient(55%_60%_at_72%_38%,rgba(22,199,154,0.12),transparent_70%),radial-gradient(48%_52%_at_40%_78%,rgba(255,180,84,0.08),transparent_72%)] blur-2xl"
+            className="pointer-events-none absolute -inset-x-8 -inset-y-8 -z-10 rounded-[2.5rem] bg-[radial-gradient(50%_60%_at_28%_45%,rgba(22,199,154,0.13),transparent_70%),radial-gradient(50%_60%_at_74%_55%,rgba(255,180,84,0.09),transparent_72%)] blur-2xl"
           />
-          <AppWindow
-            bar={primary.bar}
-            right={
-              <span className="flex shrink-0 items-center gap-2.5">
-                <span className="hidden font-mono text-[11px] tracking-wide text-ink-faint sm:inline">{primary.ref}</span>
-                <span className="rounded bg-ground/70 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.16em] text-teal/90">
-                  {product.chip}
-                </span>
-              </span>
-            }
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={primary.src}
-              alt={primary.alt}
-              width={primary.width}
-              height={primary.height}
-              loading="lazy"
-              className="block w-full"
-            />
-          </AppWindow>
+          <div className="flex flex-col items-stretch gap-6 py-2 sm:flex-row sm:items-center sm:justify-center sm:gap-5 [transform-style:preserve-3d]">
+            {/* left — the incident replay, inner edge toward the viewer */}
+            <div className="sm:w-1/2 sm:origin-right sm:[transform:rotateY(9deg)_scale(0.97)]">
+              <AppWindow
+                bar={primary.bar}
+                right={
+                  <span className="rounded bg-ground/70 px-1.5 py-0.5 font-mono text-[9px] uppercase tracking-[0.14em] text-teal/90">
+                    {product.chip}
+                  </span>
+                }
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={primary.src} alt={primary.alt} width={primary.width} height={primary.height} loading="lazy" className="block w-full" />
+              </AppWindow>
+            </div>
+            {/* right — the fleet index, mirrored */}
+            <div className="sm:w-1/2 sm:origin-left sm:[transform:rotateY(-9deg)_scale(0.97)]">
+              <AppWindow bar={secondary.bar}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={secondary.src} alt={secondary.alt} width={secondary.width} height={secondary.height} loading="lazy" className="block w-full" />
+              </AppWindow>
+            </div>
+          </div>
         </div>
 
         {/* ── feature callouts ── */}
-        <div className="mt-8 grid gap-x-8 gap-y-6 sm:grid-cols-3">
+        <div className="mt-12 grid gap-x-8 gap-y-6 sm:grid-cols-3">
           {product.features.map((f, i) => (
             <div key={f.title} className="flex gap-3">
               <svg
@@ -113,22 +117,6 @@ export function Product() {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* ── secondary: the fleet index ── */}
-        <div className="mt-16">
-          <AppWindow bar={secondary.bar}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={secondary.src}
-              alt={secondary.alt}
-              width={secondary.width}
-              height={secondary.height}
-              loading="lazy"
-              className="block w-full"
-            />
-          </AppWindow>
-          <p className="mt-3 text-[15px] text-ink-dim">{secondary.caption}</p>
         </div>
       </Container>
     </Section>
