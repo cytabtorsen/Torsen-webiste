@@ -44,11 +44,11 @@ export const site = {
 } as const;
 
 export const hero = {
-  eyebrow: "Independent incident reconstruction for physical AI",
+  eyebrow: "Torsen",
   // H1 is split so the leading word can carry the amber "why" signature.
   h1: { whyWord: "Why", rest: "did the robot do that?" },
-  sub: "You already log everything — Foxglove, Rerun, rosbags. None of it explains a learned policy’s decision. Torsen reconstructs the grounded “why” — from camera and physical ground truth, curated to the few signals that matter, kept as an independent record.",
-  cta: "Apply for a forensics pilot",
+  sub: "A robot stops on your line. Finding out why pulls your best engineer off the roadmap — hours of triage, often a trip to site, while the line stays down. Torsen reconstructs the incident, pinpoints where it first went wrong, and hands support a case they can act on.",
+  cta: "Start a pilot",
   // Secondary text link beside the primary CTA — both scroll to the intake section.
   secondary: "or just keep me posted",
 } as const;
@@ -64,6 +64,25 @@ export const problem = {
     reconState: "why",
     captionAfter: " — grounded, independent",
   },
+} as const;
+
+/**
+ * COST — where a robot incident actually burns money. Four sourced channels,
+ * big numbers, near-zero prose. This is the buyer's language (Head of Field
+ * Ops / Reliability, COO), straight from the ICP research: the leak isn't
+ * missing data, it's the human time to explain what happened.
+ */
+export const cost = {
+  eyebrow: "Where the money goes",
+  heading: "Every robot incident burns money in four places.",
+  sub: "Not in missing data — you already log everything. In the human hours it takes to explain what happened.",
+  stats: [
+    { value: "$36k–$2.3M", unit: "per hour of downtime", note: "FMCG to automotive · Siemens 2024" },
+    { value: "8h+", unit: "senior-engineer time per incident", note: "pulled off the roadmap" },
+    { value: "$1.5k–$6k", unit: "per emergency site visit", note: "when remote triage can’t answer it" },
+    { value: "$6.9M", unit: "service-ops loss, one RaaS vendor", note: "in a single year · Symbotic FY2025" },
+  ],
+  closer: "A 300-robot fleet leaks roughly $400k a year to this. Torsen is built to take back a third of it.",
 } as const;
 
 export const whatItDoes = {

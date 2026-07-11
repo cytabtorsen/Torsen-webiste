@@ -18,7 +18,7 @@ const config: Config = {
         ink: {
           DEFAULT: "#E6EAF2", // primary text
           dim: "#9AA4B2", // secondary text
-          faint: "#5C6677", // tertiary / labels
+          faint: "#7A8494", // tertiary / labels — WCAG AA (≈5:1 on ground); was #5C6677 (3.3:1)
         },
         teal: {
           DEFAULT: "#16C79A", // grounded / verified

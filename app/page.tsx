@@ -3,7 +3,7 @@ import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { Footer } from "@/components/Footer";
 import { HeadToHead } from "@/components/sections/HeadToHead";
-import { Problem } from "@/components/sections/Problem";
+import { Cost } from "@/components/sections/Cost";
 import { WhatItDoes } from "@/components/sections/WhatItDoes";
 import { Difference } from "@/components/sections/Difference";
 import { HowItWorks } from "@/components/sections/HowItWorks";
@@ -26,8 +26,8 @@ export default function Home() {
       <Nav />
       <main id="main">
         <Hero />
+        <Cost />
         <HeadToHead />
-        <Problem />
         <WhatItDoes />
         <Difference />
         <HowItWorks />

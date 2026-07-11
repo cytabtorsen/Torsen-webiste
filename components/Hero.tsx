@@ -201,7 +201,7 @@ export function Hero() {
             <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
               <a
                 href="#early-access"
-                className="focus-ring-amber inline-flex h-12 items-center justify-center rounded-lg bg-amber px-6 text-[15px] font-semibold text-ground shadow-glow transition-[transform,box-shadow,filter] duration-200 hover:-translate-y-px hover:shadow-[0_0_48px_-6px_rgba(255,180,84,0.6)] hover:brightness-105 active:translate-y-0"
+                className="focus-ring-amber inline-flex h-12 items-center justify-center rounded-lg bg-amber px-6 text-[15px] font-semibold text-ground shadow-glow transition-[transform,box-shadow,filter] duration-200 hover:-translate-y-px hover:shadow-[0_0_30px_-10px_rgba(255,180,84,0.4)] hover:brightness-105 active:translate-y-0"
               >
                 {hero.cta}
               </a>
