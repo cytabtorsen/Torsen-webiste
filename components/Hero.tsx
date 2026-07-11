@@ -19,7 +19,10 @@ import { hero } from "@/lib/copy";
  * is the interim backdrop AND stays available as the reduced-motion fallback.
  */
 const HAS_HERO_MEDIA = true;
-const HAS_HERO_VIDEO = true; // public/hero/hero-loop.{webm,mp4} (seamless boomerang loop)
+// Off: the poster is now a crisp 4K super-res still (public/hero/hero-poster.*);
+// the old 1600x900 loop undercut that crispness. Re-enable once the loop is
+// re-rendered at matching resolution.
+const HAS_HERO_VIDEO = false; // public/hero/hero-loop.{webm,mp4} (seamless boomerang loop)
 const HERO_POSTER = "/hero/hero-poster.jpg";
 const HERO_POSTER_WEBP = "/hero/hero-poster.webp";
 const HERO_LOOP_MP4 = "/hero/hero-loop.mp4";
