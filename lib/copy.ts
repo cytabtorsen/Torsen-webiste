@@ -85,6 +85,50 @@ export const cost = {
   closer: "A 300-robot fleet leaks roughly $400k a year to this. Torsen is built to take back a third of it.",
 } as const;
 
+/**
+ * PRODUCT — the tool, shown. Real screenshots of the /case replay and /fleet
+ * board, not prose. The ICP research is explicit: prospects must grasp the value
+ * in 30 seconds from the product image. Honesty chip stays (representative data).
+ */
+export const product = {
+  heading: "One reconstructed case. Not a log dump.",
+  sub: "Torsen finds the failure window in a recording you already have, aligns the streams, and replays what the robot perceived, decided, and did — with the first divergence marked. Support gets a case they can read, act on, and hand to anyone.",
+  chip: "representative · synthetic data",
+  shots: [
+    {
+      src: "/product/case.png",
+      alt: "The Torsen incident replay: a robot AMR halted at a pick station, four synchronized signal lanes, and a diagnosis panel naming the first divergence.",
+      title: "The incident replay",
+      caption: "Video, four synchronized signals, and the first divergence — in one view.",
+    },
+    {
+      src: "/product/fleet.png",
+      alt: "The Torsen fleet case index: incidents-today stat, per-robot sparklines, and a table of open incidents across the fleet.",
+      title: "The fleet case index",
+      caption: "Every open incident across the fleet, each drilling into its replay.",
+    },
+  ],
+} as const;
+
+/**
+ * ROI — why the first buyer pays. Today vs With Torsen, then the OEM leak math
+ * from the research (144 incidents/yr → ~$399k → cut 30% = ~$120k). This is the
+ * conversion beat: less senior time, fewer trips, faster close.
+ */
+export const roi = {
+  heading: "You pay because it closes more cases with fewer experts.",
+  today: "Today",
+  withTorsen: "With Torsen",
+  rows: [
+    { label: "Triage", today: "hours before a first useful hypothesis", torsen: "the case is already built when you open it" },
+    { label: "Expert escalations", today: "your best engineer, pulled into every hard case", torsen: "support closes it from the record" },
+    { label: "Site trips", today: "$1.5k–$6k when remote triage can’t answer", torsen: "the reconstruction answers remotely" },
+    { label: "Recurrence", today: "the same failure comes back unnoticed", torsen: "a fix bound to a version, watched for regression" },
+  ],
+  exampleLabel: "OEM example",
+  example: "144 incidents a year leak about $399k in senior hours, support, and trips. Cut that by 30% and Torsen returns roughly $120k a year — before churn or SLA credits.",
+} as const;
+
 export const whatItDoes = {
   eyebrow: "What Torsen does",
   heading: "Reconstruct the decision. Ground every claim. Keep an independent record.",
@@ -391,14 +435,12 @@ export const ctaSection = {
 
 export const nav = {
   links: [
-    // Labels match the section eyebrows so the vocabulary stays consistent.
-    { label: "The gap", href: "#problem" },
-    { label: "What it does", href: "#what" },
-    { label: "Where it fits", href: "#difference" },
-    { label: "How it works", href: "#how" },
-    { label: "Where this goes", href: "#mission" },
+    // Labels anchor to the tightened section set (audit-driven cut).
+    { label: "The cost", href: "#cost" },
+    { label: "The product", href: "#product" },
+    { label: "ROI", href: "#roi" },
   ],
-  cta: "Apply for a forensics pilot",
+  cta: "Start a pilot",
   menuOpen: "Open menu",
   menuClose: "Close menu",
 } as const;

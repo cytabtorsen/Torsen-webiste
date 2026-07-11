@@ -126,8 +126,7 @@ export function HeadToHead() {
   return (
     <Section id="head-to-head" className="border-t border-ground-line py-28 sm:py-40">
       <Container>
-        <p className="eyebrow">{hh.eyebrow}</p>
-        <h2 className="mt-6 max-w-3xl text-balance font-display text-[2rem] font-semibold leading-[1.1] tracking-tight sm:text-[2.5rem]">
+        <h2 className="max-w-3xl text-balance font-display text-[2rem] font-semibold leading-[1.1] tracking-tight sm:text-[2.5rem]">
           {hh.heading}
         </h2>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-ink-dim">{hh.intro}</p>
