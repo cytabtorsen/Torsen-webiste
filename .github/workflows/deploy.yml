@@ -31,6 +31,12 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_FORMSPREE_ID: ${{ vars.NEXT_PUBLIC_FORMSPREE_ID }}
+      # Booth-only demo routes (/case, /fleet) stay OFF the public site — they
+      # ship live at events from a local build. Local `npm run build` keeps them;
+      # only this public artifact drops them. The marketing Product section still
+      # shows static screenshots of them (public/product/*), just not the live app.
+      - name: Exclude booth-only demo routes from the public deploy
+        run: rm -rf out/case out/fleet
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out
