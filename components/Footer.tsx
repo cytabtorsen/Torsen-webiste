@@ -1,6 +1,6 @@
 import { Container } from "@/components/Section";
 import { footer, nav, site } from "@/lib/copy";
-import { LogoMark } from "@/components/Logo";
+import { Wordmark } from "@/components/Logo";
 
 /**
  * Footer. Carries the legitimacy an enterprise buyer looks for before trusting
@@ -14,9 +14,8 @@ export function Footer() {
         <div className="grid gap-10 md:grid-cols-[1.4fr_1fr] md:gap-16">
           {/* Brand + descriptor */}
           <div className="max-w-md">
-            <div className="flex items-center gap-2.5">
-              <LogoMark className="h-6 w-6" />
-              <span className="font-mono text-[15px] font-medium tracking-tight text-ink">{site.name}</span>
+            <div className="flex items-center">
+              <Wordmark className="text-[18px]" />
             </div>
             <p className="mt-4 text-[14px] leading-relaxed text-ink-dim">{footer.descriptor}</p>
             <a

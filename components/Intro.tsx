@@ -2,8 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { hero, site } from "@/lib/copy";
-import { LogoMark } from "@/components/Logo";
+import { Wordmark } from "@/components/Logo";
 
 /**
  * Branded entrance. On the first load of a browser session, the amber
@@ -82,8 +81,7 @@ export function Intro() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <LogoMark className="h-[30px] w-[30px]" />
-            <span className="font-display text-3xl font-semibold tracking-tight text-ink">{site.name}</span>
+            <Wordmark className="text-3xl" />
           </motion.div>
 
           {/* the arc reconstructs itself into the grounded node */}
@@ -110,15 +108,6 @@ export function Intro() {
               <circle cx={300} cy={16} r={11} fill="none" stroke="#16C79A" strokeOpacity={0.3} strokeWidth={1.5} />
             </motion.g>
           </svg>
-
-          <motion.p
-            className="eyebrow mt-2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.55, duration: 0.5 }}
-          >
-            {hero.eyebrow}
-          </motion.p>
         </motion.div>
       )}
     </AnimatePresence>

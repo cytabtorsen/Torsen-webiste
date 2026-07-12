@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { nav, site } from "@/lib/copy";
-import { LogoMark } from "@/components/Logo";
+import { Wordmark } from "@/components/Logo";
 
 /** Sticky, translucent nav. Hairline border + blur intensify after scroll.
  *  Mobile (<md) collapses the links into an accessible toggle menu. */
@@ -49,9 +49,8 @@ export function Nav() {
         aria-label="Main"
         className="mx-auto flex h-16 w-full max-w-content items-center justify-between px-6 sm:px-8"
       >
-        <a href="#top" className="focus-ring flex items-center gap-2.5" aria-label={`${site.name} home`}>
-          <LogoMark className="h-[26px] w-[26px]" />
-          <span className="font-mono text-[15px] font-medium tracking-tight text-ink">{site.name}</span>
+        <a href="#top" className="focus-ring flex items-center" aria-label={`${site.name} home`}>
+          <Wordmark className="text-[19px]" />
         </a>
 
         <div className="hidden items-center gap-8 md:flex">

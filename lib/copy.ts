@@ -44,7 +44,7 @@ export const site = {
 } as const;
 
 export const hero = {
-  eyebrow: "Torsen",
+  // No eyebrow: the nav wordmark carries the name.
   // H1 is split so the leading word can carry the amber "why" signature.
   h1: { whyWord: "Why", rest: "did the robot do that?" },
   sub: "A robot stops on your line. Finding out why pulls your best engineer off the roadmap — hours of triage, often a trip to site, while the line stays down. Torsen reconstructs the incident, pinpoints where it first went wrong, and hands support a case they can act on.",

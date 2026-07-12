@@ -168,15 +168,8 @@ export function Hero() {
       {/* ── Foreground content ── */}
       <Container className="relative z-10">
         <div className="max-w-2xl">
-          <motion.p
-            initial={{ y: 12 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="eyebrow"
-          >
-            {hero.eyebrow}
-          </motion.p>
-
+          {/* No eyebrow: the nav wordmark carries the name — a "TORSEN" kicker
+              here just repeated it (and the audit flagged it as scaffolding). */}
           <motion.h1
             initial={{ y: 16 }}
             animate={{ y: 0 }}
