@@ -15,7 +15,7 @@ export function Footer() {
           {/* Brand + descriptor */}
           <div className="max-w-md">
             <div className="flex items-center">
-              <Wordmark className="text-[18px]" />
+              <Wordmark className="h-6" />
             </div>
             <p className="mt-4 text-[14px] leading-relaxed text-ink-dim">{footer.descriptor}</p>
             <a

@@ -50,7 +50,7 @@ export function Nav() {
         className="mx-auto flex h-16 w-full max-w-content items-center justify-between px-6 sm:px-8"
       >
         <a href="#top" className="focus-ring flex items-center" aria-label={`${site.name} home`}>
-          <Wordmark className="text-[19px]" />
+          <Wordmark className="h-[26px]" />
         </a>
 
         <div className="hidden items-center gap-8 md:flex">

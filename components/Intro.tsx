@@ -81,7 +81,7 @@ export function Intro() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            <Wordmark className="text-3xl" />
+            <Wordmark className="h-12" />
           </motion.div>
 
           {/* the arc reconstructs itself into the grounded node */}
