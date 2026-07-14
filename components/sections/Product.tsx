@@ -9,16 +9,21 @@ import { product } from "@/lib/copy";
  * callouts explain the frame without fragile pixel-pinned overlays.
  */
 
+// Index-aligned to product.features in lib/copy.ts. Reorder there, reorder here.
 const FEATURE_ICONS = [
-  // first divergence — a timeline marker
+  // compared against known-good — a trace running inside an envelope, then leaving it
+  <g key="b">
+    <path d="M2 6h6.5l2.5 -2.5" />
+    <path d="M2 12h6.5l2.5 4" />
+    <polyline points="2 9 6.5 9 9.5 9.4 11.5 15 16 15" />
+  </g>,
+  // first divergence — a marked instant on a line
   <g key="d">
     <line x1="9" y1="3" x2="9" y2="15" />
     <circle cx="9" cy="9" r="2.2" />
     <line x1="3" y1="9" x2="6" y2="9" />
     <line x1="12" y1="9" x2="15" y2="9" />
   </g>,
-  // four grounded signals — a waveform
-  <polyline key="s" points="2 9 4.5 9 6.5 4 8.5 14 10.5 6 12.5 10 16 9" />,
   // a shareable case — a document
   <g key="c">
     <path d="M4.5 2.5h6l3 3v10h-9z" />

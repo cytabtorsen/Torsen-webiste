@@ -45,43 +45,118 @@ const round = (v, p = 3) => Number(v.toFixed(p));
 const nz = { velocity: mulberry32(11), steering: mulberry32(23), laserMin: mulberry32(37), battery: mulberry32(53) };
 const noise = (r, amp) => (r() * 2 - 1) * amp;
 
-// ── Velocity (m/s): cruise → corridor slowdown → the divergence decel → stall,
-//    with two small replan creep blips that fail.
+/**
+ * THE TIME BASE — t = 0 is the FIRST DIVERGENCE, and the first divergence is
+ * DEFINED as the earliest sample at which any execution lane leaves its
+ * known-good envelope. It is not a moment we chose; it is a crossing we find.
+ *
+ * Three layers, and keeping them distinct is the whole point of the record:
+ *
+ *   −1.6 s  CAUSE (perception)   the obstruction enters the laser field
+ *    0.0 s  FIRST DIVERGENCE     steering leaves the known-good envelope —
+ *                                an avoidance arc no good run ever made
+ *   +1.4 s  CASCADE (execution)  velocity leaves its envelope, braking short
+ *   +2.4 s  SYMPTOM              velocity zero — the stop a human notices
+ *
+ * The old record anchored t = 0 on the STOP. That is the symptom: by the time
+ * velocity is zero the run has been off-nominal for 2.4 s. Anchoring there
+ * marks the cascade as the divergence — precisely the mistake the product
+ * exists to prevent. The band is what makes the earlier crossing visible: a
+ * 10° steering arc is unremarkable on its own, and obviously abnormal against
+ * fourteen runs that never exceeded ±3°.
+ */
+const DIVERGENCE = 0; // by construction — see steering() / steeringBand()
+const STOP = 2.4;     // velocity zero: what the human notices unaided
+
+// ── NOMINAL (known-good): the mean profile across the 14 comparable runs. ──
+// A good APPROACH_PICK cruises, caps at the corridor, and decelerates to zero
+// AT the station (~+6 s). Note a good run also ends at zero velocity — what
+// makes this one abnormal is that it stopped EARLY, 4.1 m short. You cannot see
+// that from the velocity trace alone; you can only see it against the band.
+const velNominal = (x) =>
+  (1.18 + 0.05 * Math.sin(x * 0.35 + 1.2) - 0.23 * smoothstep(-7.4, -6.2, x)) *
+  (1 - smoothstep(2.6, 6.0, x));
+/**
+ * The velocity envelope is not a constant width, and the shape is the physics:
+ *   cruise    ±0.100 — free speed varies most between runs
+ *   corridor  ±0.065 — the speed cap is enforced, so the runs converge
+ *   decel     ±0.125 — arrival timing at the station varies again
+ * It also has to stay narrow through the corridor for a second reason: the
+ * crossing time is where the trace exits the band, so a wider band there would
+ * push first-departure from +1.4 s to +1.5 s and quietly falsify every "+1.4"
+ * in the events, the queries and the diagnosis. The assertions at the bottom of
+ * this file exist to catch exactly that.
+ */
+const velHalf = (x) =>
+  0.1 - 0.035 * smoothstep(-7.4, -5.0, x) + 0.06 * smoothstep(1.8, 5.0, x);
+
+const strNominal = (x) => 1.4 * Math.sin(x * 0.19 + 0.4); // mild, consistent path curvature
+const strHalf = () => 3.0; // ±3° between runs is the whole of known-good
+
+/**
+ * NOTE — the envelope half-width and the per-sample noise are DIFFERENT
+ * quantities and must not be conflated. The band is the spread BETWEEN runs
+ * (how much a healthy execution of this task legitimately varies, ±3° here);
+ * the noise is jitter WITHIN one run (sensor + control, well under a degree).
+ * Set them to the same order and the crossing time jitters by a sample or two —
+ * i.e. the record would report a first-divergence timestamp it cannot actually
+ * resolve. A baseline product that is sloppy about this is worse than none.
+ */
+
+const batNominal = (x) => 76.4 - 0.0042 * (x - T0);
+const batHalf = () => 0.18;
+
+// ── THE FAILED RUN ──
+
+// Velocity: tracks nominal exactly (same cruise, same corridor cap) until the
+// hard brake at +1.2 → zero by +2.4. It crosses the band's lower edge at +1.4.
 function velocity(x, r) {
-  let v = 1.18 + 0.05 * Math.sin(x * 0.35 + 1.2);
-  v -= 0.23 * smoothstep(-8.6, -7.4, x); // corridor entry: 1.18 → ~0.95
-  v *= 1 - smoothstep(0.0, 0.9, x);      // FIRST DIVERGENCE: decel to zero
-  v += 0.14 * gauss(x, 8.7, 0.45) + 0.11 * gauss(x, 16.1, 0.4); // replan creep, blocked
-  v += noise(r, x < 0.9 ? 0.018 : 0.006);
+  const openLoop = 1.18 + 0.05 * Math.sin(x * 0.35 + 1.2) - 0.23 * smoothstep(-7.4, -6.2, x);
+  let v = openLoop * (1 - smoothstep(1.2, 2.4, x)); // the brake — 4.1 m short
+  v += 0.14 * gauss(x, 10.3, 0.45) + 0.11 * gauss(x, 17.7, 0.4); // replan creep, blocked
+  v += noise(r, x < STOP ? 0.018 : 0.006);
   return Math.max(0, v);
 }
 
-// ── Steering (deg): gentle wander → a late avoidance arc that never completes → flat.
+// Steering: nominal wander until the avoidance arc — which crosses the +3°
+// envelope edge at t = 0. THIS is the first divergence; everything else follows.
 function steering(x, r) {
-  let s = 3.2 * Math.sin(x * 0.21 + 0.6) * (1 - smoothstep(0.4, 1.2, x));
-  s += 9.5 * gauss(x, -1.4, 0.75); // the avoidance arc just before divergence
-  s += 4.5 * gauss(x, 8.5, 0.5) - 3.5 * gauss(x, 16.0, 0.5); // replan wiggles
-  s += noise(r, x < 0.9 ? 1.1 : 0.25);
+  let s = strNominal(x) * (1 - smoothstep(1.9, 2.7, x)); // wander, then held straight
+  s += 10.5 * gauss(x, 0.95, 0.62); // the arc no good run made
+  s += 4.5 * gauss(x, 10.1, 0.5) - 3.5 * gauss(x, 17.6, 0.5); // replan wiggles
+  // Within-run jitter — NOT the band width. Kept well under the per-sample
+  // margin at the crossing (≈0.25° at t=0, ≈0.50° at t=−0.1) so the first
+  // departure lands on t=0 deterministically instead of being decided by noise.
+  s += noise(r, x < STOP ? 0.12 : 0.06);
   return s;
 }
 
-// ── Laser min. dist. (m): open aisle → the drop that precedes divergence → pinned
-//    at the blocked distance. The lane the diagnosis leans on.
+// Laser min. dist. (m): PERCEPTION — no band (see NominalBand in lib/case-record.ts).
+// Open aisle → the obstruction enters at −1.6 → pinned at the blocked distance.
+// This is the CAUSE, and the evidence the diagnosis leans on. It is not the
+// divergence: the world changing is not the robot departing from known-good.
 function laserMin(x, r) {
   const open = 3.15 + 0.45 * Math.sin(x * 0.13 + 2.1) + noise(r, 0.14);
-  const blocked = 0.42 + noise(r, 0.015) + 0.1 * gauss(x, 8.7, 0.6) + 0.08 * gauss(x, 16.1, 0.6);
-  const k = smoothstep(-3.0, -0.2, x); // the drop starts at −3.0 s
+  const blocked = 0.42 + noise(r, 0.015) + 0.1 * gauss(x, 10.3, 0.6) + 0.08 * gauss(x, 17.7, 0.6);
+  const k = smoothstep(-1.6, 0.6, x);
   return Math.max(0.35, open * (1 - k) + blocked * k);
 }
 
-// ── Battery (%): the honest lane — it never diverges. Slow drain, marginally
-//    shallower once the base stalls.
+// Battery (%): the honest lane — it never leaves the envelope. That is a RESULT,
+// not filler: it is how the record rules the battery out with evidence instead
+// of with an opinion.
 function battery(x, r) {
-  const drain = x < 0.9 ? 0.0042 : 0.0028;
+  const drain = x < STOP ? 0.0042 : 0.0028;
   return 76.4 - drain * (x - T0) + noise(r, 0.012);
 }
 
 const lane = (fn, r, p) => Array.from({ length: N }, (_, i) => round(fn(t(i), r), p));
+
+/** The known-good envelope, sampled on the same grid as the run. */
+const band = (nom, half, p, floor = -Infinity) => ({
+  lo: Array.from({ length: N }, (_, i) => round(Math.max(floor, nom(t(i)) - half(t(i))), p)),
+  hi: Array.from({ length: N }, (_, i) => round(nom(t(i)) + half(t(i)), p)),
+});
 
 const record = {
   schema: "torsen.case-record/1",
@@ -95,49 +170,78 @@ const record = {
   },
   timeline: {
     spanSeconds: [T0, T1],
-    divergenceAt: 0,
-    // Where "replay the incident" starts: cruise → laser drop → divergence in
-    // one ~6 s beat, auto-pausing on the divergence.
-    replayFrom: -6,
-    bagClockAtDivergence: "00:13:42.310",
+    divergenceAt: DIVERGENCE,
+    // Where "replay the incident" starts: cruise → obstruction → divergence →
+    // the stop, in one ~5 s beat, auto-pausing on the divergence.
+    replayFrom: -5,
+    bagClockAtDivergence: "00:13:40.710",
     bagDuration: "00:31:25",
     sampling: "curated 10 Hz",
     clip: {
       src: "/case/incident.mp4",
       poster: "/case/incident-poster.jpg",
       // The rendered clip covers only this window around first divergence;
-      // outside it the viewport holds the poster frame.
-      windowSeconds: [-2, 3],
+      // outside it the viewport holds the poster frame. It is centred on the
+      // STOP (the moment the render shows), so first divergence sits inside it.
+      windowSeconds: [round(STOP - 2.9, 1), round(STOP + 2.1, 1)],
     },
   },
+  // The known-good baseline this run was measured against. The comparison IS
+  // the product: `firstDeparture` is what defines t = 0, and the distance from
+  // it to `noticed` is the case for the whole thing existing.
+  baseline: {
+    runs: 14,
+    matchedOn: ["task APPROACH_PICK", "policy warehouse-nav v2.4.1", "same pick station", "laden"],
+    firstDeparture: {
+      signalId: "steering",
+      t: DIVERGENCE,
+      text: "Steering leaves the known-good envelope — an avoidance arc none of the 14 runs made.",
+    },
+    cascade: [
+      { signalId: "velocity", t: 1.4, text: "Velocity leaves the envelope — braking 4.1 m short of the station." },
+    ],
+    noticed: { t: STOP, text: "Velocity zero — the stop, and the first thing a human sees." },
+    held: [
+      { signalId: "battery", text: "Battery never left its envelope — ruled out, on evidence." },
+    ],
+  },
   signals: [
-    { id: "velocity", label: "Velocity", unit: "m/s", scale: [0, 1.5], decimals: 2, series: { t0: T0, dt: DT, values: lane(velocity, nz.velocity, 3) } },
-    { id: "steering", label: "Steering", unit: "deg", scale: [-15, 15], decimals: 1, series: { t0: T0, dt: DT, values: lane(steering, nz.steering, 2) } },
+    // Scale [0, 1.35], not [0, 1.5]: the run peaks at ~1.25 m/s, so the old
+    // domain spent 17% of the lane on empty headroom and squeezed the envelope.
+    { id: "velocity", label: "Velocity", unit: "m/s", scale: [0, 1.35], decimals: 2, series: { t0: T0, dt: DT, values: lane(velocity, nz.velocity, 3) }, nominal: band(velNominal, velHalf, 3, 0) },
+    { id: "steering", label: "Steering", unit: "deg", scale: [-15, 15], decimals: 1, series: { t0: T0, dt: DT, values: lane(steering, nz.steering, 2) }, nominal: band(strNominal, strHalf, 2) },
     { id: "laserMin", label: "Laser min. dist.", unit: "m", scale: [0, 5], decimals: 2, emphasis: true, series: { t0: T0, dt: DT, values: lane(laserMin, nz.laserMin, 3) } },
-    { id: "battery", label: "Battery", unit: "%", scale: [74, 78], decimals: 1, series: { t0: T0, dt: DT, values: lane(battery, nz.battery, 3) } },
+    // Scale tightened to [75.6, 77.0]: on the old [74, 78] the ±0.18 envelope
+    // was 9% of the lane and rendered as a fuzzy line — meaning the record asked
+    // you to accept "battery: ruled out" against a band you could not see. The
+    // lane's y-domain is a display choice; the evidence has to be legible.
+    { id: "battery", label: "Battery", unit: "%", scale: [75.6, 77.0], decimals: 1, series: { t0: T0, dt: DT, values: lane(battery, nz.battery, 3) }, nominal: band(batNominal, batHalf, 3) },
   ],
   events: [
-    { t: -30.0, kind: "info", label: "Task APPROACH_PICK dispatched — pick station P-07" },
-    { t: -18.4, kind: "info", label: "Waypoint W-3 reached, nominal profile" },
-    { t: -8.2, kind: "info", label: "Entered pick-approach corridor, speed capped" },
-    { t: -3.0, kind: "warn", label: "Obstacle in laser field — min. distance falling" },
-    { t: 0.0, kind: "divergence", label: "First divergence — velocity departs the nominal profile" },
-    { t: 0.9, kind: "warn", label: "Velocity zero — motion stalled short of pick" },
-    { t: 1.6, kind: "warn", label: "Recovery behavior triggered — replan requested" },
-    { t: 8.7, kind: "warn", label: "Replan attempt 1 — corridor still blocked" },
-    { t: 16.1, kind: "warn", label: "Replan attempt 2 — corridor still blocked" },
-    { t: 24.0, kind: "failure", label: "Task abandoned — HOLD, awaiting operator" },
+    { t: -28.4, kind: "info", label: "Task APPROACH_PICK dispatched — pick station P-07" },
+    { t: -16.8, kind: "info", label: "Waypoint W-3 reached, inside the known-good envelope" },
+    { t: -6.6, kind: "info", label: "Entered pick-approach corridor, speed capped — still nominal" },
+    { t: -1.6, kind: "warn", label: "Obstruction enters the laser field — min. distance falling" },
+    { t: 0.0, kind: "divergence", label: "First divergence — steering leaves the known-good envelope" },
+    { t: 1.4, kind: "warn", label: "Velocity leaves the envelope — braking 4.1 m short of the station" },
+    { t: 2.4, kind: "warn", label: "Velocity zero — motion stalled short of pick" },
+    { t: 3.1, kind: "warn", label: "Recovery behavior triggered — replan requested" },
+    { t: 10.3, kind: "warn", label: "Replan attempt 1 — corridor still blocked" },
+    { t: 17.7, kind: "warn", label: "Replan attempt 2 — corridor still blocked" },
+    { t: 25.6, kind: "failure", label: "Task abandoned — HOLD, awaiting operator" },
   ],
   // Curated, searchable moments — the "visual search" index. Each grounds in
   // one signal over a window; selecting one jumps the playhead there.
   moments: [
-    { t: -18.4, label: "Waypoint W-3 — nominal cruise", signalId: "velocity", window: [-22, -15] },
-    { t: -8.2, label: "Corridor entry — speed capped", signalId: "velocity", window: [-10.5, -6] },
-    { t: -3.0, label: "Obstacle enters the laser field", signalId: "laserMin", window: [-5, -1] },
-    { t: 0.0, label: "First divergence — velocity departs plan", signalId: "velocity", window: [-1, 2] },
-    { t: 1.6, label: "Recovery behavior — replan requested", signalId: "velocity", window: [0.5, 4] },
-    { t: 8.7, label: "Replan creep — corridor still blocked", signalId: "laserMin", window: [7, 11] },
-    { t: 24.0, label: "Task abandoned — HOLD", signalId: "velocity", window: [21, 27] },
+    { t: -16.8, label: "Waypoint W-3 — inside the envelope", signalId: "velocity", window: [-20, -13] },
+    { t: -6.6, label: "Corridor entry — speed capped, still nominal", signalId: "velocity", window: [-9, -4.5] },
+    { t: -1.6, label: "Obstruction enters the laser field", signalId: "laserMin", window: [-3.5, 0.5] },
+    { t: 0.0, label: "First divergence — steering leaves the envelope", signalId: "steering", window: [-1, 2.5] },
+    { t: 1.4, label: "Velocity leaves the envelope — braking short", signalId: "velocity", window: [0.5, 3.5] },
+    { t: 2.4, label: "The stop — what a human notices", signalId: "velocity", window: [1.5, 4] },
+    { t: 3.1, label: "Recovery behavior — replan requested", signalId: "velocity", window: [2, 5.5] },
+    { t: 10.3, label: "Replan creep — corridor still blocked", signalId: "laserMin", window: [8.5, 12.5] },
+    { t: 25.6, label: "Task abandoned — HOLD", signalId: "velocity", window: [23, 28] },
   ],
   // The askable set — questions this record can answer, each grounded in
   // signals with timestamps. HONESTY: the demo answers ONLY from this set;
@@ -149,31 +253,32 @@ const record = {
       q: "Why did the robot stop?",
       aliases: ["why did it stop", "why halt", "why stuck", "root cause", "what happened", "cause", "why blocked"],
       answer:
-        "The path was blocked. Laser min. distance fell from ~3.2 m to 0.42 m in the three seconds before first divergence; velocity departed the nominal profile at 00:00 and reached zero 0.9 s later.",
+        "The path was blocked. An obstruction entered the laser field 1.6 s before first divergence and min. distance fell from ~3.2 m to 0.42 m. The robot swung into an avoidance arc none of the 14 known-good runs made, then braked 4.1 m short of the station and stopped.",
       grounding: [
-        { t: -3.0, signalId: "laserMin", text: "Laser min. distance 3.2 m → 0.42 m" },
-        { t: 0.9, signalId: "velocity", text: "Velocity 0 — motion stalled" },
+        { t: -1.6, signalId: "laserMin", text: "Laser min. distance 3.2 m → 0.42 m" },
+        { t: 0, signalId: "steering", text: "Steering leaves the known-good envelope" },
+        { t: 2.4, signalId: "velocity", text: "Velocity 0 — motion stalled" },
       ],
       jumpTo: 0,
-      highlight: { signalId: "laserMin", window: [-3, 1] },
+      highlight: { signalId: "laserMin", window: [-2.5, 1] },
     },
     {
       id: "obstacle-when",
       q: "When did the obstacle appear?",
       aliases: ["obstacle", "pallet", "blocked", "laser", "what blocked the path", "when blocked"],
       answer:
-        "3.0 s before first divergence (bag clock 00:13:39.31) the laser field picked up an obstruction in the pick-approach corridor and min. distance began falling.",
-      grounding: [{ t: -3.0, signalId: "laserMin", text: "Min. distance begins falling" }],
-      jumpTo: -3,
-      highlight: { signalId: "laserMin", window: [-4.5, 0] },
+        "1.6 s before first divergence (bag clock 00:13:39.11) the laser field picked up an obstruction in the pick-approach corridor and min. distance began falling. That is the cause — but it is not the divergence: the world changing is not the robot leaving known-good.",
+      grounding: [{ t: -1.6, signalId: "laserMin", text: "Min. distance begins falling" }],
+      jumpTo: -1.6,
+      highlight: { signalId: "laserMin", window: [-3, 0.5] },
     },
     {
       id: "battery",
       q: "Was the battery a factor?",
       aliases: ["battery", "power", "charge", "voltage", "energy"],
       answer:
-        "No. The battery lane never diverged — 76.4% at window start, 76.2% at window end, a nominal drain profile throughout.",
-      grounding: [{ t: 0, signalId: "battery", text: "Nominal drain, no divergence" }],
+        "No — and this is measured, not assumed. The battery lane stayed inside the envelope of all 14 known-good runs for the entire window: 76.4% at start, 76.2% at end, nominal drain throughout.",
+      grounding: [{ t: 0, signalId: "battery", text: "Inside the known-good envelope, start to end" }],
       jumpTo: 0,
       highlight: { signalId: "battery", window: [-30, 30] },
     },
@@ -182,24 +287,50 @@ const record = {
       q: "What was the first divergence?",
       aliases: ["divergence", "first divergence", "when did it diverge", "depart nominal", "where did it go wrong"],
       answer:
-        "At 00:13:42.31 the measured velocity departed the nominal approach profile — the earliest point where actual behavior left the plan. Every timestamp on this page is relative to it.",
-      grounding: [{ t: 0, signalId: "velocity", text: "Velocity departs nominal profile" }],
+        "Steering, at 00:13:40.71 — the robot began an avoidance arc that none of the 14 comparable runs ever made. That is the earliest sample where its behavior left the known-good envelope. Every timestamp on this page is relative to it.",
+      grounding: [{ t: 0, signalId: "steering", text: "Steering exceeds the ±3° known-good envelope" }],
       jumpTo: 0,
-      highlight: { signalId: "velocity", window: [-1, 2] },
+      highlight: { signalId: "steering", window: [-1, 2.5] },
+    },
+    {
+      id: "baseline",
+      q: "What are you comparing it against?",
+      aliases: ["baseline", "known good", "nominal", "healthy runs", "compare", "comparison", "envelope", "band", "normal"],
+      answer:
+        "14 successful executions of the same task — APPROACH_PICK to the same station, same policy version (warehouse-nav v2.4.1), same laden state. The shaded band on each execution lane is their envelope. Laser min. distance carries no band on purpose: what sits in the aisle varies legitimately run to run, so it is evidence, never a baseline.",
+      grounding: [
+        { t: 0, signalId: "steering", text: "First lane to leave the envelope" },
+        { t: 1.4, signalId: "velocity", text: "Second — the cascade, 1.4 s later" },
+      ],
+      jumpTo: 0,
+      highlight: { signalId: "steering", window: [-1, 2.5] },
+    },
+    {
+      id: "notice-gap",
+      q: "How much earlier is this than the stop?",
+      aliases: ["earlier", "gap", "how much sooner", "before the stop", "head start", "why does it matter"],
+      answer:
+        "2.4 s. The stop is what a human notices — velocity hits zero and the robot is visibly halted. By then the run had been outside the known-good envelope for 2.4 s, and the obstruction had been in the laser field for 4.0 s. Start at the stop and you are already investigating the cascade.",
+      grounding: [
+        { t: 0, signalId: "steering", text: "First divergence" },
+        { t: 2.4, signalId: "velocity", text: "The stop — where a human starts" },
+      ],
+      jumpTo: 0,
+      highlight: { signalId: "velocity", window: [0, 2.4] },
     },
     {
       id: "recovery",
       q: "Did the robot try to recover?",
       aliases: ["recover", "recovery", "replan", "retry", "try again", "self correct"],
       answer:
-        "Yes — recovery behavior triggered 1.6 s after divergence and the planner attempted two replans (+8.7 s, +16.1 s). Both creep attempts stalled against the same obstruction.",
+        "Yes — recovery behavior triggered 3.1 s after divergence and the planner attempted two replans (+10.3 s, +17.7 s). Both creep attempts stalled against the same obstruction.",
       grounding: [
-        { t: 1.6, signalId: null, text: "Recovery behavior triggered" },
-        { t: 8.7, signalId: "velocity", text: "Replan creep, blocked" },
-        { t: 16.1, signalId: "velocity", text: "Replan creep, blocked" },
+        { t: 3.1, signalId: null, text: "Recovery behavior triggered" },
+        { t: 10.3, signalId: "velocity", text: "Replan creep, blocked" },
+        { t: 17.7, signalId: "velocity", text: "Replan creep, blocked" },
       ],
-      jumpTo: 8.7,
-      highlight: { signalId: "velocity", window: [6, 18] },
+      jumpTo: 10.3,
+      highlight: { signalId: "velocity", window: [8, 19] },
     },
     {
       id: "contact",
@@ -207,18 +338,18 @@ const record = {
       aliases: ["hit", "collision", "crash", "impact", "contact", "touch", "damage"],
       answer:
         "No contact. The stop completed 0.42 m short of the obstruction, and laser min. distance holds at that floor for the rest of the window.",
-      grounding: [{ t: 0.9, signalId: "laserMin", text: "Min. distance floor 0.42 m, held" }],
-      jumpTo: 0.9,
-      highlight: { signalId: "laserMin", window: [0, 24] },
+      grounding: [{ t: 2.4, signalId: "laserMin", text: "Min. distance floor 0.42 m, held" }],
+      jumpTo: 2.4,
+      highlight: { signalId: "laserMin", window: [1, 25] },
     },
     {
       id: "task",
       q: "What task was it running?",
       aliases: ["task", "mission", "job", "what was it doing", "pick", "approach"],
       answer:
-        "APPROACH_PICK toward pick station P-07, dispatched 30 s before first divergence under policy warehouse-nav v2.4.1.",
-      grounding: [{ t: -30, signalId: null, text: "Task dispatched" }],
-      jumpTo: -30,
+        "APPROACH_PICK toward pick station P-07, dispatched 28.4 s before first divergence under policy warehouse-nav v2.4.1.",
+      grounding: [{ t: -28.4, signalId: null, text: "Task dispatched" }],
+      jumpTo: -28.4,
       highlight: null,
     },
     {
@@ -226,10 +357,10 @@ const record = {
       q: "How did the task end?",
       aliases: ["end", "outcome", "result", "abandoned", "hold", "operator", "resolution"],
       answer:
-        "Abandoned 24 s after divergence — the robot entered HOLD awaiting an operator, with the corridor still blocked.",
-      grounding: [{ t: 24, signalId: null, text: "HOLD — awaiting operator" }],
-      jumpTo: 24,
-      highlight: { signalId: "velocity", window: [21, 27] },
+        "Abandoned 25.6 s after divergence — the robot entered HOLD awaiting an operator, with the corridor still blocked.",
+      grounding: [{ t: 25.6, signalId: null, text: "HOLD — awaiting operator" }],
+      jumpTo: 25.6,
+      highlight: { signalId: "velocity", window: [23, 28] },
     },
   ],
   // The workflow face of the case — the docket that grows AROUND the sealed
@@ -249,9 +380,10 @@ const record = {
   diagnosis: {
     likelyCause: "Path blocked",
     evidence: [
-      { t: -3.0, signalId: "laserMin", text: "Laser min. distance drops" },
-      { t: 0.9, signalId: "velocity", text: "Velocity decelerates to 0" },
-      { t: 1.6, signalId: null, text: "Recovery behavior triggered" },
+      { t: -1.6, signalId: "laserMin", text: "Obstruction enters the laser field" },
+      { t: 0.0, signalId: "steering", text: "Steering leaves the known-good envelope" },
+      { t: 1.4, signalId: "velocity", text: "Velocity leaves it — braking short" },
+      { t: 2.4, signalId: "velocity", text: "Velocity 0 — the stop" },
     ],
     nextAction: {
       title: "Inspect aisle clearance",
@@ -260,6 +392,55 @@ const record = {
     },
   },
 };
+
+/**
+ * ── THE GUARD ────────────────────────────────────────────────────────────────
+ * The record's prose — every "+1.4 s", the events, the queries, the diagnosis —
+ * asserts WHERE each lane leaves its envelope. Those are claims about the
+ * numbers in this same file, and nothing but this check keeps them true. Retune
+ * a band half-width or a signal by a hair and the crossing slides a sample;
+ * the copy then states a first-divergence timestamp the data does not support,
+ * silently, and the whole product is a liar about the one thing it sells.
+ *
+ * So: derive the crossings from the emitted arrays and refuse to write the file
+ * if they disagree with what the record says about itself.
+ */
+const crossings = {};
+for (const s of record.signals) {
+  if (!s.nominal) continue;
+  const i = s.series.values.findIndex(
+    (v, k) => v < s.nominal.lo[k] || v > s.nominal.hi[k],
+  );
+  crossings[s.id] = i === -1 ? null : round(T0 + i * DT, 1);
+}
+
+const expected = {
+  [record.baseline.firstDeparture.signalId]: record.baseline.firstDeparture.t,
+  ...Object.fromEntries(record.baseline.cascade.map((c) => [c.signalId, c.t])),
+  ...Object.fromEntries(record.baseline.held.map((h) => [h.signalId, null])),
+};
+
+for (const [id, want] of Object.entries(expected)) {
+  const got = crossings[id];
+  if (got !== want) {
+    throw new Error(
+      `case-record: ${id} leaves its envelope at ${got === null ? "never" : `${got}s`}, ` +
+        `but the record claims ${want === null ? "never" : `${want}s`}. ` +
+        `Either retune the signal/band, or update baseline + events + queries + diagnosis to match. ` +
+        `Do not ship a record that misstates its own first divergence.`,
+    );
+  }
+}
+
+// The earliest crossing of ANY execution lane must be the first divergence,
+// and the first divergence must be t = 0 — that is what the time base means.
+const earliest = Math.min(...Object.values(crossings).filter((v) => v !== null));
+if (earliest !== record.timeline.divergenceAt) {
+  throw new Error(
+    `case-record: earliest departure is ${earliest}s but divergenceAt is ${record.timeline.divergenceAt}s. ` +
+      `t = 0 IS the first divergence; re-anchor the time base.`,
+  );
+}
 
 // Pretty-print, but keep each numeric values array on one line.
 const json = JSON.stringify(record, null, 2).replace(

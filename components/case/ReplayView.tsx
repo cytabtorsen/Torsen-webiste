@@ -4,6 +4,7 @@ import {
   caseRecord as rec,
   fmtRel,
   valueAt,
+  outOfBand,
   type CaseSignal,
   type CaseEventKind,
   type CaseFocus,
@@ -62,12 +63,54 @@ const EVENT_DOT: Record<CaseEventKind, string> = {
 };
 
 // Memoized: the trace never changes; the playhead re-renders 60×/s around it.
+//
+// Each lane draws, back to front: the KNOWN-GOOD BAND (the envelope of the 14
+// comparable runs), the run's trace, and then — in amber — only the stretches
+// where the trace is OUTSIDE the band. The colour change is not decoration: it
+// is the measurement. The first amber pixel on the steering lane is t = 0, and
+// t = 0 is first divergence by definition, not by annotation.
+//
+// AMBER MEANS EXACTLY ONE THING HERE: outside the known-good envelope. Nothing
+// else may claim it. An earlier version painted the whole laser lane amber
+// (it is the lane the diagnosis leans on) — which read as "this lane diverged"
+// when the lane has no envelope to diverge from, and quietly cost the chart its
+// only rule. Perception lanes are teal like everything else; their weight comes
+// from the diagnosis panel and the events, not from the colour.
 const Lane = memo(function Lane({ signal }: { signal: CaseSignal }) {
   const { values } = signal.series;
   const [lo, hi] = signal.scale;
-  const points = values
-    .map((v, i) => `${i},${(100 - ((Math.min(hi, Math.max(lo, v)) - lo) / (hi - lo)) * 100).toFixed(2)}`)
-    .join(" ");
+  const y = (v: number) => 100 - ((Math.min(hi, Math.max(lo, v)) - lo) / (hi - lo)) * 100;
+  /** Points for values[a..b] inclusive, keeping each sample's true x index. */
+  const pts = (vals: readonly number[], a = 0, b = vals.length - 1) => {
+    const out: string[] = [];
+    for (let i = a; i <= b; i++) out.push(`${i},${y(vals[i]).toFixed(2)}`);
+    return out.join(" ");
+  };
+
+  const n = signal.nominal;
+  // Closed polygon: the lo edge forward, the hi edge back.
+  let bandPts: string | null = null;
+  if (n) {
+    const back: string[] = [];
+    for (let i = n.hi.length - 1; i >= 0; i--) back.push(`${i},${y(n.hi[i]).toFixed(2)}`);
+    bandPts = `${pts(n.lo)} ${back.join(" ")}`;
+  }
+
+  // Contiguous runs of out-of-band samples, each extended by one sample at both
+  // ends so the amber joins the teal trace instead of floating off it.
+  const breaches: string[] = [];
+  if (n) {
+    let start: number | null = null;
+    for (let i = 0; i <= values.length; i++) {
+      const out = i < values.length && (values[i] < n.lo[i] || values[i] > n.hi[i]);
+      if (out && start === null) start = i;
+      if (!out && start !== null) {
+        breaches.push(pts(values, Math.max(0, start - 1), Math.min(values.length - 1, i)));
+        start = null;
+      }
+    }
+  }
+
   return (
     <svg
       viewBox={`0 0 ${values.length - 1} 100`}
@@ -75,13 +118,34 @@ const Lane = memo(function Lane({ signal }: { signal: CaseSignal }) {
       className="h-full w-full"
       aria-hidden="true"
     >
+      {bandPts && (
+        <polygon
+          points={bandPts}
+          className="fill-ink-faint/20 stroke-ink-faint/40"
+          vectorEffect="non-scaling-stroke"
+          strokeWidth={0.75}
+        />
+      )}
+      {/* 1.5 rather than 1.75: on the narrow bands the trace and its antialiasing
+          ate most of the channel, which is why the envelope read as a fuzzy line. */}
       <polyline
-        points={points}
+        points={pts(values)}
         fill="none"
         vectorEffect="non-scaling-stroke"
-        strokeWidth={1.75}
-        className={signal.emphasis ? "stroke-amber" : "stroke-teal/80"}
+        strokeWidth={1.5}
+        className="stroke-teal/80"
       />
+      {breaches.map((b) => (
+        <polyline
+          key={b.slice(0, 24)}
+          points={b}
+          fill="none"
+          vectorEffect="non-scaling-stroke"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          className="stroke-amber"
+        />
+      ))}
     </svg>
   );
 });
@@ -122,7 +186,10 @@ export function ReplayView({
   }, [t, playing, inWindow]);
 
   return (
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-5">
+    // The chart holds its minimum; when the shell is shorter than the content
+    // (short laptop, answer card open, phone), this column scrolls rather than
+    // letting the lanes collapse or paint over the legend.
+    <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-5 overflow-y-auto">
       {/* ── The viewport — the rendered incident stage ── */}
       <figure
         role="img"
@@ -174,8 +241,16 @@ export function ReplayView({
 
       {/* ── Time axis + signal lanes, one shared playhead ──
           Every column stacks a fixed axis spacer + four flex-1 basis-0 cells,
-          so the lanes stretch to fill the frame and the gutters stay aligned. */}
-      <div className="flex min-h-0 flex-1">
+          so the lanes stretch to fill the frame and the gutters stay aligned.
+
+          The lane cells keep a 56px floor (min-h-14) and the stack keeps a hard
+          minimum, so the chart can never be squeezed out of existence — on a
+          1280×720 laptop with the answer card open, or on a phone, flex would
+          otherwise happily collapse all four lanes to zero and leave the legend
+          describing a band that isn't there. When the column genuinely runs out
+          of room the ROOT scrolls (see the wrapper) instead of the lanes
+          overprinting whatever sits below them. */}
+      <div className="flex min-h-[272px] flex-1">
         {/* label gutter — the axis spacer carries the transport */}
         <div className="hidden w-40 shrink-0 flex-col sm:flex">
           <div className="flex h-12 shrink-0 items-center gap-1.5 pr-3">
@@ -211,8 +286,14 @@ export function ReplayView({
           </div>
           {rec.signals.map((s) => (
             <div key={s.id} className="flex min-h-14 flex-1 basis-0 items-center pr-3">
-              <span className={`font-mono text-[11px] leading-tight ${s.emphasis ? "text-amber" : "text-teal/90"}`}>
+              <span className="font-mono text-[11px] leading-tight text-teal/90">
                 {s.label} <span className="text-ink-faint">({s.unit})</span>
+                {/* no envelope to leave — say so on the lane, not just in the legend */}
+                {!s.nominal && (
+                  <span className="mt-0.5 block text-[9px] uppercase tracking-[0.12em] text-ink-faint">
+                    {cd.baseline.evidenceLane}
+                  </span>
+                )}
               </span>
             </div>
           ))}
@@ -308,13 +389,46 @@ export function ReplayView({
               className="flex min-h-14 flex-1 basis-0 flex-col items-end justify-between py-1 pl-2 font-mono text-[9px] tabular-nums text-ink-faint/80"
             >
               <span>{s.scale[1]}</span>
-              <span className={`text-[10px] ${s.emphasis ? "text-amber" : "text-ink"}`}>
+              {/* the readout goes amber exactly while the run is outside its
+                  envelope — the band's verdict, live, without reading the trace */}
+              <span
+                className={`text-[10px] ${
+                  outOfBand(s, Math.round((t - s.series.t0) / s.series.dt)) ? "text-amber" : "text-ink"
+                }`}
+              >
                 {valueAt(s.series, t).toFixed(s.decimals)}
               </span>
               <span>{s.scale[0]}</span>
             </div>
           ))}
         </div>
+      </div>
+
+      {/* ── The baseline legend — what the band IS, and which lane has none.
+           The run count and matched dimensions come from the record, never from
+           copy: the comparison is data, and it has to be able to change. ── */}
+      <div className="shrink-0 border-t border-ground-line pt-3 sm:pl-40">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <span className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className="h-2.5 w-4 shrink-0 rounded-[2px] border border-ink-faint/25 bg-ink-faint/[0.12]"
+            />
+            <span className="font-mono text-[10px] text-ink-dim">
+              {cd.baseline.band} — {rec.baseline.runs} known-good runs
+            </span>
+          </span>
+          <span className="flex items-center gap-2">
+            <span aria-hidden="true" className="h-[2px] w-4 shrink-0 rounded-full bg-amber" />
+            <span className="font-mono text-[10px] text-ink-dim">{cd.baseline.breach}</span>
+          </span>
+          <span className="font-mono text-[10px] text-ink-faint">
+            {cd.baseline.matchedPrefix} {rec.baseline.matchedOn.join(" · ")}
+          </span>
+        </div>
+        <p className="mt-2 max-w-2xl text-[11px] leading-relaxed text-ink-faint">
+          {cd.baseline.noBand}
+        </p>
       </div>
     </div>
   );

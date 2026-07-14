@@ -23,6 +23,8 @@ export function DiagnosisPanel({
   onResolve: () => void;
 }) {
   const d = rec.diagnosis;
+  // How far ahead of the unaided starting point the record lands you.
+  const headStart = rec.baseline.noticed.t - rec.baseline.firstDeparture.t;
   const [listOpen, setListOpen] = useState(false);
   const done = checked.filter(Boolean).length;
   const allDone = done === rec.workflow.checklist.length;
@@ -37,6 +39,25 @@ export function DiagnosisPanel({
         <p className="mt-1 font-display text-[26px] font-semibold leading-tight text-amber [text-shadow:0_0_18px_rgba(255,180,84,0.35)]">
           {d.likelyCause}
         </p>
+
+        {/* The head start. This is the case for the baseline existing: the stop
+            is where an engineer starts unaided, and by then the run had already
+            been outside the known-good envelope for `gap` seconds. Computed
+            from the record — never a typed-in number. */}
+        <div className="mt-5 rounded-lg border border-ground-line bg-ground-raised px-3.5 py-3">
+          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-faint">
+            {cd.diagnosis.headStart}
+          </p>
+          <p className="mt-1.5 font-display text-[22px] font-semibold leading-none text-teal">
+            {headStart.toFixed(1)} s{" "}
+            <span className="font-sans text-[12px] font-normal text-ink-dim">
+              {cd.diagnosis.headStartUnit}
+            </span>
+          </p>
+          <p className="mt-2 text-[11px] leading-relaxed text-ink-faint">
+            {rec.baseline.firstDeparture.text}
+          </p>
+        </div>
 
         <p className="mt-7 text-[12px] text-ink-dim">{cd.diagnosis.evidence}</p>
         <ul className="mt-3 space-y-3">

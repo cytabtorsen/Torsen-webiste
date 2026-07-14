@@ -92,20 +92,25 @@ export const cost = {
  */
 export const product = {
   heading: "One reconstructed case. Not a log dump.",
-  sub: "Torsen finds the failure window in a recording you already have, aligns the streams, and replays what the robot perceived, decided, and did — with the first divergence marked. Support gets a case they can read, act on, and hand to anyone.",
+  // The comparison IS the product — say it here, not just in the interface. A
+  // "first divergence" with nothing to diverge FROM is an assertion; against the
+  // known-good runs of the same task it is a crossing you can point at.
+  sub: "Torsen finds the failure window in a recording you already have, lines the run up against the runs that worked, and marks the first moment it left them. Support gets a case they can read, act on, and hand to anyone.",
   chip: "representative · synthetic data",
   primary: {
     // 2x retina (2880x1800), displayed ~1.5x-density.
     src: "/product/case.webp",
     width: 2880,
     height: 1800,
-    alt: "The Torsen incident replay: an AMR halted at a pick station, four synchronized signal lanes with the first divergence marked, and a diagnosis panel naming the likely cause.",
+    alt: "The Torsen incident replay: an AMR halted at a pick station, four synchronized signal lanes each shaded with the envelope of fourteen known-good runs, the trace turning amber where it leaves that envelope at the marked first divergence, and a diagnosis panel naming the likely cause.",
     bar: "Torsen · incident replay",
     ref: "AMR-12 · TSN-2026-0630-0417",
   },
+  // INVARIANT — features[] is index-aligned to FEATURE_ICONS in Product.tsx
+  // (envelope → divergence marker → document). Reorder here, reorder there.
   features: [
-    { title: "First divergence", desc: "The exact instant the run left nominal — marked on the timeline." },
-    { title: "Four grounded signals", desc: "Velocity, steering, laser distance, battery — from the recording, not the policy." },
+    { title: "Compared against known-good", desc: "The same task, run normally, is the baseline — the band each signal should have stayed inside." },
+    { title: "First divergence", desc: "The earliest moment the run left that band — found before the stop anyone would notice." },
     { title: "A shareable case", desc: "Diagnosis, evidence, and next action — one record support can act on and hand to anyone." },
   ],
   secondary: {
@@ -116,6 +121,55 @@ export const product = {
     bar: "Torsen · case index",
     caption: "And across the fleet — every open incident, each drilling into its replay.",
   },
+} as const;
+
+/**
+ * STACK — "where it fits", and the answer to the hardest objection we have.
+ *
+ * Sits after Product (the reader now knows what Torsen IS) and before ROI (the
+ * "where does it fit / do I already have this?" objection is a buying objection).
+ *
+ * PROVENANCE — this section exists because of one comment in the r/ROS thread:
+ * SOVD + ros2_medkit already give you freeze-frame capture, rolling buffers, and
+ * cross-domain (ROS + PLC + OPC UA) assembly over HTTP on shipped robots — and,
+ * quoting it, "the cross-domain context gets assembled by the architecture, not
+ * by you during debugging." If that is free, a ROS engineer will ask what Torsen
+ * is for. The answer is the section's closing line: assembly is not interpretation.
+ *
+ * BOUNDARY GUARDRAIL — name the STACK, never a rival. Everything in `theirs` is
+ * something the reader already runs and should KEEP; the copy must read as
+ * compatibility, not competition. No logos, no "vs", no funded-incumbent framing.
+ * rosbag2/MCAP/SOVD/ros2_medkit/Foxglove appear here as the substrate we read.
+ *
+ * WITNESS GUARDRAIL — independence appears here as a PROPERTY (read-only, writes
+ * nothing back), never as the headline claim. It earns its place by being the
+ * reason you can drop Torsen in without touching the robot.
+ */
+export const stack = {
+  heading: "Keep your recorder. Torsen begins where capture ends.",
+  sub: "Your stack already holds the recording, freezes the buffer when the fault fires, and assembles ROS, PLC and safety state into one view. None of that tells you which signals mattered, or where the run first left nominal. That part is still done by hand — by your most expensive engineer.",
+  theirs: {
+    label: "Your stack captures",
+    items: [
+      { name: "rosbag2 · MCAP", desc: "The recording, already on disk." },
+      { name: "Freeze-frame · rolling buffer", desc: "The fault doesn’t start the recording — it stops it." },
+      { name: "SOVD · ros2_medkit", desc: "Faults, snapshots and PLC state, assembled and served over HTTP." },
+      { name: "Foxglove · Rerun", desc: "Replay and visualization — once you know where to look." },
+    ],
+  },
+  ours: {
+    label: "Torsen investigates",
+    items: [
+      { name: "Finds the failure window", desc: "In the recording you already have — no new instrumentation." },
+      { name: "Compares against known-good", desc: "The same task, executed normally, is the baseline." },
+      { name: "Marks the first divergence", desc: "And separates the cause from the cascade that followed." },
+      { name: "Hands back a case", desc: "Evidence, next action — and what was never recorded." },
+    ],
+  },
+  // The load-bearing line. It is the whole section compressed, and it is the
+  // sentence that answers the thread. Keep it short enough to quote.
+  close: "Assembly is architecture. Interpretation is the work.",
+  readOnly: "Read-only, start to finish — Torsen never writes to your bag, your robot, or your ticket.",
 } as const;
 
 /**
@@ -777,6 +831,18 @@ export const caseDemo = {
     divergenceLabel: "First divergence",
     hint: "Scrub the incident timeline",
   },
+  // The baseline legend — CHROME only; the run count, the matched dimensions and
+  // every timestamp come from the record. This is the honesty layer of the
+  // comparison: it states what the band IS, and — just as load-bearing — which
+  // lane deliberately has none and why.
+  baseline: {
+    band: "Nominal band",
+    breach: "Outside the envelope",
+    matchedPrefix: "matched on",
+    evidenceLane: "evidence · no band",
+    noBand:
+      "Laser min. distance carries no band: what sits in the aisle varies legitimately from run to run. It is evidence for a divergence, never the definition of one.",
+  },
   ask: {
     placeholder: "Ask the record…",
     label: "Ask the record",
@@ -816,6 +882,11 @@ export const caseDemo = {
     likelyCause: "Likely cause:",
     evidence: "Evidence at divergence:",
     nextAction: "Next action",
+    // The head start — the whole argument for the baseline, in one number. The
+    // gap is COMPUTED from the record (noticed − firstDeparture), never typed
+    // here: if the comparison changes, the claim has to change with it.
+    headStart: "Found ahead of the stop",
+    headStartUnit: "earlier than the stop",
   },
   disclaimer:
     "Representative case — synthetic data, rendered reconstruction; not a real customer incident.",
