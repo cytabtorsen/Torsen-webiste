@@ -413,6 +413,41 @@
       }
     },
     {
+      "id": "limits",
+      "q": "What can’t you tell me?",
+      "aliases": [
+        "limits",
+        "cant you tell",
+        "what dont you know",
+        "uncertain",
+        "unknown",
+        "missing",
+        "not sure",
+        "how confident",
+        "confidence",
+        "could you be wrong",
+        "wrong"
+      ],
+      "answer": "What is in the aisle. The laser proves something was there and stayed there for 25 s; it cannot name it — there is no camera in this record. That is why the leading hypothesis sits at 68% and not higher, why two others stay open, and why 9% of this incident is accounted for by nothing at all. One camera frame at −1.6 s would close it.",
+      "grounding": [
+        {
+          "t": -1.6,
+          "signalId": "laserMin",
+          "text": "Something is there — but not what"
+        },
+        {
+          "t": 17.7,
+          "signalId": "laserMin",
+          "text": "Still there 19 s later, unnamed"
+        }
+      ],
+      "jumpTo": -1.6,
+      "highlight": {
+        "signalId": "laserMin",
+        "window": [-3, 0.5]
+      }
+    },
+    {
       "id": "recovery",
       "q": "Did the robot try to recover?",
       "aliases": [
@@ -537,6 +572,7 @@
   },
   "diagnosis": {
     "likelyCause": "Path blocked",
+    "confidence": 0.68,
     "evidence": [
       {
         "t": -1.6,
@@ -559,6 +595,138 @@
         "text": "Velocity 0 — the stop"
       }
     ],
+    "hypotheses": [
+      {
+        "id": "obstruction",
+        "claim": "A physical obstruction in the pick-approach corridor",
+        "status": "leading",
+        "confidence": 0.68,
+        "supporting": [
+          {
+            "t": -1.6,
+            "signalId": "laserMin",
+            "text": "Min. distance falls 3.2 m → 0.42 m and stays there"
+          },
+          {
+            "t": 10.3,
+            "signalId": "laserMin",
+            "text": "Still 0.42 m at replan 1 — a person or a passing truck would have cleared"
+          },
+          {
+            "t": 17.7,
+            "signalId": "laserMin",
+            "text": "Still 0.42 m at replan 2, 19 s after the stop"
+          }
+        ],
+        "counter": [
+          {
+            "t": 0,
+            "signalId": null,
+            "text": "No camera in the record — nothing confirms WHAT is there. The laser proves an obstacle, not a pallet."
+          },
+          {
+            "t": 2.4,
+            "signalId": "laserMin",
+            "text": "The 0.42 m floor is suspiciously flat (±0.015 m) for a physical object at a closing angle."
+          }
+        ],
+        "wouldMove": [
+          "camera",
+          "scan"
+        ]
+      },
+      {
+        "id": "localization",
+        "claim": "Localization drift — it braked for an obstacle that was not where it thought",
+        "status": "open",
+        "confidence": 0.14,
+        "supporting": [
+          {
+            "t": 0,
+            "signalId": "steering",
+            "text": "Steering diverged BEFORE velocity — consistent with a planner reacting to a bad pose, not a reflex stop"
+          }
+        ],
+        "counter": [
+          {
+            "t": -1.6,
+            "signalId": "laserMin",
+            "text": "Laser range is egocentric — it does not care where the robot thinks it is, and it still saw something at 0.42 m"
+          }
+        ],
+        "wouldMove": [
+          "pose"
+        ]
+      },
+      {
+        "id": "phantom",
+        "claim": "Spurious laser returns — dust, steam, or a reflective surface",
+        "status": "open",
+        "confidence": 0.09,
+        "supporting": [
+          {
+            "t": -1.6,
+            "signalId": "laserMin",
+            "text": "The floor value is unnaturally constant, which is more typical of a specular return than a solid"
+          }
+        ],
+        "counter": [
+          {
+            "t": 17.7,
+            "signalId": "laserMin",
+            "text": "It held for 25 s across two replans. Dust disperses; steam moves. This did not."
+          }
+        ],
+        "wouldMove": [
+          "camera",
+          "scan"
+        ]
+      },
+      {
+        "id": "power",
+        "claim": "Power or battery fault",
+        "status": "ruled-out",
+        "confidence": 0,
+        "supporting": [],
+        "counter": [
+          {
+            "t": 0,
+            "signalId": "battery",
+            "text": "Battery never left the envelope of the 14 known-good runs — not once, across the whole window"
+          }
+        ],
+        "ruledOutBy": "The battery lane stayed inside its known-good envelope for the entire window."
+      }
+    ],
+    "coverage": {
+      "limit": "Torsen cannot tell you WHAT is in the aisle. The laser proves something was there and stayed there for 25 seconds; it cannot name it. Every hypothesis below the leading one is bounded by that, and no amount of reasoning over this record will settle it.",
+      "missing": [
+        {
+          "id": "camera",
+          "signal": "Camera frame at the failure window",
+          "settles": "Separates the obstruction from a phantom return outright — one frame at −1.6 s ends the argument.",
+          "capture": "Key /camera/front into the same freeze-frame trigger the rosbag already uses: 5 Hz for the 5 s around the fault. ~12 MB per incident."
+        },
+        {
+          "id": "scan",
+          "signal": "Full laser scan, not just the minimum",
+          "settles": "The record keeps min. distance — one number per sweep. The full scan shows the obstruction's WIDTH and shape: a pallet subtends an arc, a specular glint is one ray.",
+          "capture": "Keep /scan in the freeze-frame window at 10 Hz rather than reducing it to a minimum on the robot. ~2 MB per incident."
+        },
+        {
+          "id": "pose",
+          "signal": "Localization covariance",
+          "settles": "Rules the drift hypothesis in or out — the only thing that can.",
+          "capture": "Record /amcl_pose covariance and the odom→map residual at 10 Hz. Kilobytes."
+        },
+        {
+          "id": "policy",
+          "signal": "Policy action confidence / OOD score",
+          "settles": "Whether the avoidance arc was a deliberate manoeuvre or the policy going out-of-distribution. The record shows WHAT it steered; nothing here shows whether it meant to.",
+          "capture": "warehouse-nav v2.4.1 exposes neither. Publish /policy/action_confidence and /policy/ood_score at 10 Hz and the next case answers this in one pass."
+        }
+      ]
+    },
     "nextAction": {
       "title": "Inspect aisle clearance",
       "body": "Check for pallet, debris, or misaligned load.",

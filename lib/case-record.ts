@@ -90,6 +90,63 @@ export type CaseEvidence = {
   ev?: { kind: EvidenceKind; ref: string };
 };
 
+/**
+ * ── HYPOTHESES ───────────────────────────────────────────────────────────────
+ * The product's whole credibility rests here. The r/ROS thread's sharpest fear
+ * was not "the AI is wrong" — it was "the AI is confidently wrong and I can't
+ * tell." So a hypothesis is not a sentence; it is a claim carrying the evidence
+ * FOR it, the evidence AGAINST it, and a confidence that means something.
+ *
+ * INVARIANTS (enforced at generation — see the guard in the synth script):
+ *   · exactly one `leading`, and it must hold the highest confidence
+ *   · confidences are competing explanations, so they SUM TO ≤ 1. The shortfall
+ *     is not slack to be padded out — it is the part of the incident no
+ *     hypothesis accounts for, and the UI shows it as exactly that.
+ *   · every live hypothesis carries at least one piece of COUNTER-evidence. If
+ *     nothing argues against your leading theory, you have not looked; a panel
+ *     that only ever shows support is the confident-wrong-answer machine the
+ *     thread was afraid of.
+ *   · `ruled-out` requires `ruledOutBy` and confidence 0 — a negative result is
+ *     a finding, and it has to be evidenced like any other.
+ */
+export type HypothesisStatus = "leading" | "open" | "ruled-out";
+
+export type Hypothesis = {
+  id: string;
+  claim: string;
+  status: HypothesisStatus;
+  /** 0–1, calibrated against resolved cases — not a model's felt certainty. */
+  confidence: number;
+  supporting: CaseEvidence[];
+  counter: CaseEvidence[];
+  /** The single fact that killed it. Required when status is "ruled-out". */
+  ruledOutBy?: string;
+  /** Ids of the missing signals that would actually move this one. */
+  wouldMove?: string[];
+};
+
+/**
+ * A signal the record does NOT have — and, crucially, what it would SETTLE.
+ * "Here is what I could not conclude, and the one thing you'd need to log to
+ * conclude it next time" is the opposite of overclaiming, and it is the part of
+ * the product a mature team can check us on. A missing-signal entry that does
+ * not name the hypothesis it separates is a wish list, not an advisor.
+ */
+export type MissingSignal = {
+  id: string;
+  signal: string;
+  /** Which hypotheses it would separate, and how. */
+  settles: string;
+  /** The instrumentation ask, concretely enough to action before the next run. */
+  capture: string;
+};
+
+export type CaseCoverage = {
+  /** The ceiling. What this record cannot tell you, however hard you ask it. */
+  limit: string;
+  missing: MissingSignal[];
+};
+
 /** An amber projection onto one lane — what a query or moment lights up. */
 export type CaseFocus = { signalId: string; window: [number, number] };
 
@@ -153,17 +210,17 @@ export type CaseRecord = {
     checklist: string[];
   };
   diagnosis: {
+    /** The leading hypothesis's claim, restated for the headline. */
     likelyCause: string;
+    /** The leading hypothesis's confidence. Never presented without `hypotheses`. */
+    confidence: number;
+    /** Ranked. Exactly one `leading`; see the invariants on Hypothesis. */
+    hypotheses: Hypothesis[];
+    /** What the record could NOT settle, and the signal that would. */
+    coverage: CaseCoverage;
+    /** The at-divergence summary — the short evidence spine of the case. */
     evidence: CaseEvidence[];
     nextAction: { title: string; body: string; cta: string };
-    /**
-     * Phase 3 (ranked hypotheses, calibrated confidence, counter-evidence).
-     * Optional until the record carries them — see the note on CaseEvidence.
-     */
-    narrative?: string;
-    confidence?: number;
-    alternatives?: string[];
-    contradictions?: string[];
   };
 };
 
@@ -172,6 +229,21 @@ export const caseRecord = record as unknown as CaseRecord;
 /** Offset from first divergence for display — "−3.0 s" / "+0.9 s" (true minus sign). */
 export function fmtRel(t: number): string {
   return `${t < 0 ? "−" : "+"}${Math.abs(t).toFixed(1)} s`;
+}
+
+/**
+ * The share of the incident that NO hypothesis accounts for (1 − Σ confidence).
+ *
+ * This is the number a diagnosis tool is most tempted to hide. Confidences that
+ * sum to 1.00 look authoritative and are almost always a lie — they mean the
+ * hypothesis set was padded until it closed, rather than left honestly open. The
+ * panel renders this shortfall as its own bar, in the same visual language as
+ * the hypotheses, because "we cannot account for 9% of this" is a finding the
+ * engineer is entitled to see before they act on the other 91%.
+ */
+export function unaccounted(hypotheses: Hypothesis[]): number {
+  const claimed = hypotheses.reduce((s, h) => s + h.confidence, 0);
+  return Math.max(0, 1 - claimed);
 }
 
 /**

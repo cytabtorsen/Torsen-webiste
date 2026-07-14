@@ -846,6 +846,35 @@ export const caseDemo = {
     headStart: "Found ahead of the stop",
     headStartUnit: "earlier than the stop",
   },
+  /**
+   * HYPOTHESES + COVERAGE — the honesty layer, and the answer to the r/ROS
+   * thread's real objection ("an LLM reads the logs and confidently tells you
+   * the wrong root cause"). Three rules the copy must never soften:
+   *   · every hypothesis shows what argues AGAINST it, not only for
+   *   · the confidences do not sum to 1, and the shortfall is named out loud
+   *   · the record states what it CANNOT settle, before anyone has to ask
+   */
+  hypotheses: {
+    heading: "Hypotheses",
+    // Confidence is a ranking over evidence, not a feeling. Say so where it's shown.
+    calibration:
+      "Ranked on the evidence in this record. Not a model’s certainty — and not padded to 100%.",
+    supporting: "What supports it",
+    counter: "What argues against it",
+    ruledOut: "Ruled out",
+    unaccounted: "Unaccounted",
+    unaccountedNote: "No hypothesis the evidence in this record supports.",
+    expand: "Show the evidence",
+    collapse: "Hide the evidence",
+    wouldMove: "Would be settled by:",
+  },
+  coverage: {
+    heading: "What this record can’t settle",
+    limitLabel: "The ceiling",
+    missingHeading: "Log this and the next one answers it",
+    settles: "Settles",
+    capture: "Capture",
+  },
   disclaimer:
     "Representative case — synthetic data, rendered reconstruction; not a real customer incident.",
 } as const;

@@ -319,6 +319,21 @@ const record = {
       highlight: { signalId: "velocity", window: [0, 2.4] },
     },
     {
+      // The question a sceptic actually asks. It must have an answer, and the
+      // answer must be a real limit — not a humble-brag dressed as candour.
+      id: "limits",
+      q: "What can’t you tell me?",
+      aliases: ["limits", "cant you tell", "what dont you know", "uncertain", "unknown", "missing", "not sure", "how confident", "confidence", "could you be wrong", "wrong"],
+      answer:
+        "What is in the aisle. The laser proves something was there and stayed there for 25 s; it cannot name it — there is no camera in this record. That is why the leading hypothesis sits at 68% and not higher, why two others stay open, and why 9% of this incident is accounted for by nothing at all. One camera frame at −1.6 s would close it.",
+      grounding: [
+        { t: -1.6, signalId: "laserMin", text: "Something is there — but not what" },
+        { t: 17.7, signalId: "laserMin", text: "Still there 19 s later, unnamed" },
+      ],
+      jumpTo: -1.6,
+      highlight: { signalId: "laserMin", window: [-3, 0.5] },
+    },
+    {
       id: "recovery",
       q: "Did the robot try to recover?",
       aliases: ["recover", "recovery", "replan", "retry", "try again", "self correct"],
@@ -379,12 +394,115 @@ const record = {
   },
   diagnosis: {
     likelyCause: "Path blocked",
+    confidence: 0.68,
     evidence: [
       { t: -1.6, signalId: "laserMin", text: "Obstruction enters the laser field" },
       { t: 0.0, signalId: "steering", text: "Steering leaves the known-good envelope" },
       { t: 1.4, signalId: "velocity", text: "Velocity leaves it — braking short" },
       { t: 2.4, signalId: "velocity", text: "Velocity 0 — the stop" },
     ],
+    /**
+     * Ranked, and each one carries the case AGAINST itself. The confidences sum
+     * to 0.91 — the missing 0.09 is not rounding, it is the part of this
+     * incident the evidence does not explain, and the panel shows it.
+     */
+    hypotheses: [
+      {
+        id: "obstruction",
+        claim: "A physical obstruction in the pick-approach corridor",
+        status: "leading",
+        confidence: 0.68,
+        supporting: [
+          { t: -1.6, signalId: "laserMin", text: "Min. distance falls 3.2 m → 0.42 m and stays there" },
+          { t: 10.3, signalId: "laserMin", text: "Still 0.42 m at replan 1 — a person or a passing truck would have cleared" },
+          { t: 17.7, signalId: "laserMin", text: "Still 0.42 m at replan 2, 19 s after the stop" },
+        ],
+        counter: [
+          { t: 0, signalId: null, text: "No camera in the record — nothing confirms WHAT is there. The laser proves an obstacle, not a pallet." },
+          { t: 2.4, signalId: "laserMin", text: "The 0.42 m floor is suspiciously flat (±0.015 m) for a physical object at a closing angle." },
+        ],
+        wouldMove: ["camera", "scan"],
+      },
+      {
+        id: "localization",
+        claim: "Localization drift — it braked for an obstacle that was not where it thought",
+        status: "open",
+        confidence: 0.14,
+        supporting: [
+          { t: 0, signalId: "steering", text: "Steering diverged BEFORE velocity — consistent with a planner reacting to a bad pose, not a reflex stop" },
+        ],
+        counter: [
+          { t: -1.6, signalId: "laserMin", text: "Laser range is egocentric — it does not care where the robot thinks it is, and it still saw something at 0.42 m" },
+        ],
+        wouldMove: ["pose"],
+      },
+      {
+        id: "phantom",
+        claim: "Spurious laser returns — dust, steam, or a reflective surface",
+        status: "open",
+        confidence: 0.09,
+        supporting: [
+          { t: -1.6, signalId: "laserMin", text: "The floor value is unnaturally constant, which is more typical of a specular return than a solid" },
+        ],
+        counter: [
+          { t: 17.7, signalId: "laserMin", text: "It held for 25 s across two replans. Dust disperses; steam moves. This did not." },
+        ],
+        wouldMove: ["camera", "scan"],
+      },
+      {
+        id: "power",
+        claim: "Power or battery fault",
+        status: "ruled-out",
+        confidence: 0,
+        supporting: [],
+        counter: [
+          { t: 0, signalId: "battery", text: "Battery never left the envelope of the 14 known-good runs — not once, across the whole window" },
+        ],
+        ruledOutBy: "The battery lane stayed inside its known-good envelope for the entire window.",
+      },
+    ],
+    /**
+     * THE COVERAGE ADVISOR — what this record cannot answer, and the one signal
+     * that would fix it next time. This is the section that makes the rest
+     * believable: a tool that only ever tells you what it found is indistinguishable
+     * from a tool that tells you what you want to hear.
+     */
+    coverage: {
+      limit:
+        "Torsen cannot tell you WHAT is in the aisle. The laser proves something was there and stayed there for 25 seconds; it cannot name it. Every hypothesis below the leading one is bounded by that, and no amount of reasoning over this record will settle it.",
+      missing: [
+        {
+          id: "camera",
+          signal: "Camera frame at the failure window",
+          settles:
+            "Separates the obstruction from a phantom return outright — one frame at −1.6 s ends the argument.",
+          capture:
+            "Key /camera/front into the same freeze-frame trigger the rosbag already uses: 5 Hz for the 5 s around the fault. ~12 MB per incident.",
+        },
+        {
+          id: "scan",
+          signal: "Full laser scan, not just the minimum",
+          settles:
+            "The record keeps min. distance — one number per sweep. The full scan shows the obstruction's WIDTH and shape: a pallet subtends an arc, a specular glint is one ray.",
+          capture:
+            "Keep /scan in the freeze-frame window at 10 Hz rather than reducing it to a minimum on the robot. ~2 MB per incident.",
+        },
+        {
+          id: "pose",
+          signal: "Localization covariance",
+          settles: "Rules the drift hypothesis in or out — the only thing that can.",
+          capture: "Record /amcl_pose covariance and the odom→map residual at 10 Hz. Kilobytes.",
+        },
+        {
+          id: "policy",
+          signal: "Policy action confidence / OOD score",
+          settles:
+            "Whether the avoidance arc was a deliberate manoeuvre or the policy going out-of-distribution. The record shows WHAT it steered; nothing here shows whether it meant to.",
+          capture:
+            "warehouse-nav v2.4.1 exposes neither. Publish /policy/action_confidence and /policy/ood_score at 10 Hz and the next case answers this in one pass.",
+        },
+      ],
+    },
     nextAction: {
       title: "Inspect aisle clearance",
       body: "Check for pallet, debris, or misaligned load.",
@@ -440,6 +558,67 @@ if (earliest !== record.timeline.divergenceAt) {
     `case-record: earliest departure is ${earliest}s but divergenceAt is ${record.timeline.divergenceAt}s. ` +
       `t = 0 IS the first divergence; re-anchor the time base.`,
   );
+}
+
+/**
+ * ── THE HYPOTHESIS GUARD ─────────────────────────────────────────────────────
+ * The panel's whole claim on an engineer's trust is that it argues against
+ * itself and admits what it cannot see. That is a property of the DATA, so it
+ * gets enforced here rather than left to whoever next edits the record.
+ */
+const H = record.diagnosis.hypotheses;
+const leading = H.filter((h) => h.status === "leading");
+
+if (leading.length !== 1) {
+  throw new Error(`case-record: expected exactly one "leading" hypothesis, found ${leading.length}.`);
+}
+if (Math.max(...H.map((h) => h.confidence)) !== leading[0].confidence) {
+  throw new Error(`case-record: the leading hypothesis does not hold the highest confidence.`);
+}
+if (record.diagnosis.likelyCause && record.diagnosis.confidence !== leading[0].confidence) {
+  throw new Error(
+    `case-record: diagnosis.confidence (${record.diagnosis.confidence}) must equal the leading hypothesis's (${leading[0].confidence}).`,
+  );
+}
+
+const total = H.reduce((s, h) => s + h.confidence, 0);
+if (total > 1 + 1e-9) {
+  throw new Error(
+    `case-record: hypothesis confidences sum to ${total.toFixed(2)} — they are competing explanations and cannot exceed 1. ` +
+      `Padding them until they close is how a diagnosis tool starts lying.`,
+  );
+}
+
+for (const h of H) {
+  // A live hypothesis with nothing against it means nobody looked.
+  if (h.status !== "ruled-out" && h.counter.length === 0) {
+    throw new Error(
+      `case-record: hypothesis "${h.id}" is live but carries no counter-evidence. ` +
+        `If nothing argues against it, you have not looked — and a panel that only ever shows support ` +
+        `is exactly the confidently-wrong machine this product exists to not be.`,
+    );
+  }
+  if (h.status === "ruled-out" && (!h.ruledOutBy || h.confidence !== 0)) {
+    throw new Error(
+      `case-record: hypothesis "${h.id}" is ruled-out and must carry ruledOutBy and confidence 0. ` +
+        `A negative result is a finding; evidence it like one.`,
+    );
+  }
+  // Every evidence pointer must actually resolve, or the citation is decorative.
+  for (const e of [...h.supporting, ...h.counter]) {
+    if (e.signalId !== null && !record.signals.some((s) => s.id === e.signalId)) {
+      throw new Error(`case-record: hypothesis "${h.id}" cites unknown signal "${e.signalId}".`);
+    }
+    if (e.t < T0 || e.t > T1) {
+      throw new Error(`case-record: hypothesis "${h.id}" cites t=${e.t}s, outside the recorded window.`);
+    }
+  }
+  // "This signal would move it" is only meaningful if the signal is one we name.
+  for (const id of h.wouldMove ?? []) {
+    if (!record.diagnosis.coverage.missing.some((m) => m.id === id)) {
+      throw new Error(`case-record: hypothesis "${h.id}" points at missing signal "${id}", which is not in coverage.missing.`);
+    }
+  }
 }
 
 // Pretty-print, but keep each numeric values array on one line.

@@ -123,6 +123,20 @@ export function CaseReplay() {
     setAnswer(null);
     setFocus(null);
   };
+  /**
+   * A cited piece of evidence is only a citation if you can GO to it. Clicking
+   * one in the diagnosis panel drives the playhead to that instant and lights
+   * the lane it rests on — so "the laser held at 0.42 m through both replans"
+   * is a thing the reader can check in one click, not a sentence they have to
+   * take on trust. Counter-evidence is navigable on exactly the same terms as
+   * supporting evidence; that symmetry is the point.
+   */
+  const onEvidence = useCallback((et: number, signalId: string | null) => {
+    setView("replay");
+    setAnswer(null);
+    setFocus(signalId ? { signalId, window: [et - 1.5, et + 1.5] } : null);
+    jump(et);
+  }, [jump]);
 
   return (
     <main className="flex min-h-dvh flex-col bg-ground text-ink lg:h-dvh lg:flex-row lg:overflow-hidden">
@@ -156,6 +170,7 @@ export function CaseReplay() {
         onToggleItem={(i) => setChecked((c) => c.map((v, k) => (k === i ? !v : v)))}
         resolved={resolved}
         onResolve={() => setResolved(true)}
+        onEvidence={onEvidence}
       />
     </main>
   );
