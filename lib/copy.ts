@@ -523,10 +523,13 @@ export const footer = {
 export const privacy = {
   title: "Privacy",
   updated: "Last updated June 2026.",
-  // Honest + minimal. Matches what the form actually does (single email field,
-  // handled by Formspree) under the reframed forensics-pilot / keep-me-posted intent.
+  // Must describe what the forms ACTUALLY send. The pilot form posts three
+  // things (incident description, whether a recording exists, email); the
+  // keep-me-posted path posts one (email). Saying "only the email address" was
+  // wrong — if we ask people to trust us with an evidence record, the privacy
+  // page is a strange place to be careless.
   body: [
-    "Torsen collects only the email address you submit — whether you’re applying for a pilot or just asking to be kept posted. We use it for one thing: to reply to you about reconstructing a failure, or to update you when there’s something worth sharing.",
+    "If you apply for a pilot, Torsen collects three things: the description of the failure you write, whether you have a recording of it, and your email address. If you only ask to be kept posted, we collect your email address and nothing else. We use them for one thing: to reply to you about reconstructing a failure, or to update you when there’s something worth sharing.",
     "Submissions are handled by Formspree, our form provider, which processes the email on our behalf. We do not sell, rent, or share your address, and we send no marketing.",
     "Want off the list? Email cyrilletabe@torsen.ai and we’ll delete your address.",
   ],
@@ -550,14 +553,25 @@ export const waitlist = {
 } as const;
 
 /**
- * The forensics-pilot intake form (Phase 2a). The gated application that doubles
- * as a discovery instrument + willingness-to-pay probe. Sits under
- * ctaSection.heading / ctaSection.sub; the lightweight "keep me posted" path
- * keeps using the `waitlist` object above. Guardrail-safe: founder-led,
- * limited-slot framing — never promises instant turnaround or an automated
- * product, never implies Torsen prevents/fixes/controls anything. The WTP probe
- * reads as research, not a sell (a friction-free "no" is a first-class option;
- * any amount is explicitly optional and ballpark).
+ * The pilot intake form. THREE fields — the failure, whether a recording exists,
+ * and an email. Nothing else.
+ *
+ * It used to ask nine (company+role, policy stack, robot model, current
+ * time-to-root-cause, a willingness-to-pay probe and its amount, on top of these
+ * three). Every one of those was a real question worth an answer — and asking
+ * them all of a cold visitor, before Torsen has done anything for them, is how
+ * you get a beautifully-instrumented form that nobody finishes. Discovery data
+ * you never receive is worth nothing.
+ *
+ * The cut questions are not abandoned, they are DEFERRED to the founder's reply,
+ * where the person is already engaged and answering costs them nothing. A short
+ * form plus a live thread yields strictly more signal than a long form plus an
+ * abandonment. If you re-add a field here, be able to say which of those three
+ * it outranks.
+ *
+ * Guardrail-safe: founder-led, limited-slot framing — never promises instant
+ * turnaround or an automated product, never implies Torsen prevents/fixes/
+ * controls anything.
  */
 export const pilotForm = {
   source: "torsen.ai pilot",
@@ -566,45 +580,18 @@ export const pilotForm = {
   error: "Something went wrong sending that. Please try again.",
   unconfigured: "Form endpoint not configured yet.",
   errorSummaryTitle: "Please correct a few things:",
-  // Founder-led, limited-slot expectation — sits under the submit button.
+  // Founder-led, limited-slot expectation — sits under the submit button. It
+  // also sets the expectation that the REST of the conversation happens by reply.
   nextStep:
-    "We take a handful of incidents at a time — a founder reads every application and replies in person.",
-  // Single Formspree endpoint; honest + minimal.
+    "Three questions, then a founder reads it and replies in person — we’ll ask about your stack there, not here.",
   privacy: "Your answers go to one inbox via Formspree — no marketing, never shared.",
-  // Replaces the form on success (founder-to-engineer voice).
   success: {
     title: "Received.",
     body: "We read every one of these ourselves — expect a reply, founder-to-engineer, about reconstructing this failure with you.",
   },
-  // Fieldset legends — chunk the form so 8 inputs don't read as a wall.
-  legends: { incident: "The failure", you: "You & your stack" },
   // Divider into the secondary low-intent path (renders <WaitlistForm/>).
   secondaryPrompt: "Not ready to bring a failure yet?",
   fields: {
-    companyRole: {
-      label: "Company & your role",
-      placeholder: "Figure — reliability lead · Agility — field engineer",
-      help: "We work with the engineer who owns the failure, not central IT.",
-      error: "Tell us who you are and what you own — the failure-owner, not central IT.",
-    },
-    policyStack: {
-      label: "Primary policy stack",
-      placeholder: "Select the policy in control —",
-      options: [
-        { value: "vla", label: "VLA — vision-language-action" },
-        { value: "il", label: "Imitation learning" },
-        { value: "rl", label: "Reinforcement learning" },
-        { value: "hybrid", label: "Hybrid / multiple" },
-        { value: "other", label: "Other learned policy" },
-      ],
-      error: "Pick the policy that was in control when it failed.",
-    },
-    robotModel: {
-      label: "Robot type & model family",
-      placeholder: "e.g. humanoid, π0 · wheeled manipulator, in-house IL",
-      help: "Hardware and the model family it runs — as specific as you can share.",
-      error: "Name the robot and the model family — even roughly.",
-    },
     incident: {
       label: "The incident",
       placeholder: "What did the robot do, and what couldn’t your logs explain about why?",
@@ -620,35 +607,6 @@ export const pilotForm = {
         { value: "unsure", label: "Not sure / would have to check" },
       ],
       error: "Let us know if there’s a recording — yes, no, or not sure.",
-    },
-    timeToRootCause: {
-      label: "Time from incident to confirmed root cause — today",
-      placeholder: "How long it takes you now —",
-      help: "Roughly, for a failure like this one — from when it happened to a root cause you’d stand behind.",
-      options: [
-        { value: "lt1h", label: "Under an hour" },
-        { value: "1to8h", label: "1–8 hours" },
-        { value: "1to3d", label: "1–3 days" },
-        { value: "gt3d", label: "More than 3 days" },
-        { value: "unresolved", label: "Still open — we never confirmed it" },
-      ],
-      error: "Pick the range that’s closest — a rough honest answer beats a precise guess.",
-    },
-    wtp: {
-      label:
-        "If a scoped Torsen pilot reconstructed this failure, would a token fee be worth it to you?",
-      help: "Honest answers help us scope this fairly — there’s no wrong one, and no commitment here.",
-      options: [
-        { value: "yes", label: "Yes — that’d be worth paying for" },
-        { value: "maybe", label: "Maybe — depends what it surfaced" },
-        { value: "no", label: "No — I’d only want it free" },
-      ],
-      error: "Pick the one that’s most honest — yes, maybe, or no.",
-    },
-    wtpAmount: {
-      // Conditional: shown only when wtp is "yes" or "maybe". Always optional.
-      label: "A ballpark, if one comes to mind",
-      placeholder: "e.g. a few hundred to scope it — only if a figure’s in your head",
     },
     email: {
       label: "Work email",

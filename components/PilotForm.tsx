@@ -4,10 +4,13 @@ import { useEffect, useId, useRef, useState, type FormEvent, type ReactNode } fr
 import { pilotForm } from "@/lib/copy";
 
 /**
- * The forensics-pilot intake form (Phase 2a) — the gated application that is
- * also a discovery instrument + willingness-to-pay probe. Sibling to
- * WaitlistForm (which stays as the lightweight "keep me posted" path); the two
- * share only design tokens + the Formspree POST pattern.
+ * The pilot intake form — THREE fields. Sibling to WaitlistForm (the lightweight
+ * "keep me posted" path); the two share only design tokens + the Formspree POST.
+ *
+ * It asked nine. See the note on `pilotForm` in lib/copy.ts for why it no longer
+ * does — the short version is that discovery data you never receive is worth
+ * nothing, and the cut questions now get asked in the founder's reply, where
+ * they cost the applicant nothing to answer.
  *
  * No form library — plain useState + an errors map (one form, static page, perf
  * budget). Static-export-safe: client fetch to Formspree, env var inlined via
@@ -17,49 +20,23 @@ import { pilotForm } from "@/lib/copy";
 const FORMSPREE_ID = process.env.NEXT_PUBLIC_FORMSPREE_ID;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // identical to WaitlistForm
 
-type FieldName =
-  | "companyRole"
-  | "policyStack"
-  | "robotModel"
-  | "incident"
-  | "hasRecording"
-  | "timeToRootCause"
-  | "wtp"
-  | "wtpAmount"
-  | "email";
+type FieldName = "incident" | "hasRecording" | "email";
 
 type Values = Record<FieldName | "honeypot", string>;
 type Errors = Partial<Record<FieldName, string>>;
 type Status = "idle" | "submitting" | "success" | "error" | "unconfigured";
 
 const EMPTY: Values = {
-  companyRole: "",
-  policyStack: "",
-  robotModel: "",
   incident: "",
   hasRecording: "",
-  timeToRootCause: "",
-  wtp: "",
-  wtpAmount: "",
   email: "",
   honeypot: "",
 };
 
 // Visual order — drives the error-summary list so it matches the form.
-const ORDER: FieldName[] = [
-  "incident",
-  "hasRecording",
-  "timeToRootCause",
-  "companyRole",
-  "policyStack",
-  "robotModel",
-  "wtp",
-  "wtpAmount",
-  "email",
-];
+const ORDER: FieldName[] = ["incident", "hasRecording", "email"];
 
 const f = pilotForm.fields;
-const wtpWantsAmount = (wtp: string) => wtp === "yes" || wtp === "maybe";
 
 const inputClass =
   "w-full rounded-lg border border-ground-line bg-ground-raised px-4 py-3 text-[15px] text-ink " +
@@ -91,12 +68,7 @@ export function PilotForm() {
   }, [status]);
 
   function set(name: FieldName | "honeypot", v: string) {
-    setValues((prev) => {
-      const next = { ...prev, [name]: v };
-      // Clearing WTP to "no" drops any amount so it never reaches the payload.
-      if (name === "wtp" && !wtpWantsAmount(v)) next.wtpAmount = "";
-      return next;
-    });
+    setValues((prev) => ({ ...prev, [name]: v }));
     if (name !== "honeypot" && errors[name as FieldName]) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -109,15 +81,9 @@ export function PilotForm() {
 
   function validate(v: Values): Errors {
     const e: Errors = {};
-    if (v.companyRole.trim().length < 2) e.companyRole = f.companyRole.error;
-    if (!v.policyStack) e.policyStack = f.policyStack.error;
-    if (v.robotModel.trim().length < 2) e.robotModel = f.robotModel.error;
     if (v.incident.trim().length < 20) e.incident = f.incident.error;
     if (!v.hasRecording) e.hasRecording = f.hasRecording.error;
-    if (!v.timeToRootCause) e.timeToRootCause = f.timeToRootCause.error;
-    if (!v.wtp) e.wtp = f.wtp.error;
     if (!EMAIL_RE.test(v.email)) e.email = f.email.error;
-    // wtpAmount is always optional and free text — never validated.
     return e;
   }
 
@@ -142,21 +108,15 @@ export function PilotForm() {
     }
     setStatus("submitting");
     try {
-      const includeAmount = wtpWantsAmount(values.wtp) && values.wtpAmount.trim();
       const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
-          _subject: `Forensics pilot — ${values.companyRole || "new applicant"}`,
+          // The email is the only identity we now collect — subject off that.
+          _subject: `Pilot — ${values.email || "new applicant"}`,
           source: pilotForm.source,
-          company_role: values.companyRole,
-          policy_stack: values.policyStack,
-          robot_model: values.robotModel,
           incident: values.incident,
           has_recording: values.hasRecording,
-          time_to_root_cause: values.timeToRootCause,
-          wtp: values.wtp,
-          ...(includeAmount ? { wtp_amount: values.wtpAmount.trim() } : {}),
           email: values.email,
           _gotcha: values.honeypot,
         }),
@@ -213,10 +173,9 @@ export function PilotForm() {
         </div>
       )}
 
-      {/* ── Fieldset A — the failure (low-friction, emotionally resonant first) ── */}
-      <fieldset className="flex flex-col gap-6">
-        <legend className="eyebrow mb-2">{pilotForm.legends.incident}</legend>
-
+      {/* Three fields, no fieldsets — at this length, chunking is just more chrome
+          to read. The failure first: it is the only one they came here to answer. */}
+      <div className="flex flex-col gap-6">
         <Field name="incident" label={f.incident.label} hint={f.incident.help} required error={errors.incident} fid={fid} errId={errId} hintId={hintId}>
           {(ids) => (
             <textarea
@@ -247,122 +206,6 @@ export function PilotForm() {
           hintId={hintId}
         />
 
-        <Field name="timeToRootCause" label={f.timeToRootCause.label} hint={f.timeToRootCause.help} required error={errors.timeToRootCause} fid={fid} errId={errId} hintId={hintId}>
-          {(ids) => (
-            <select
-              {...ids}
-              value={values.timeToRootCause}
-              disabled={busy}
-              onChange={(e) => set("timeToRootCause", e.target.value)}
-              aria-invalid={!!errors.timeToRootCause}
-              className={inputClass + (values.timeToRootCause ? "" : " text-ink-dim")}
-            >
-              <option value="" disabled>
-                {f.timeToRootCause.placeholder}
-              </option>
-              {f.timeToRootCause.options.map((o) => (
-                <option key={o.value} value={o.value} className="text-ink">
-                  {o.label}
-                </option>
-              ))}
-            </select>
-          )}
-        </Field>
-      </fieldset>
-
-      {/* ── Fieldset B — you & your stack (qualification) ── */}
-      <fieldset className="mt-10 flex flex-col gap-6">
-        <legend className="eyebrow mb-2">{pilotForm.legends.you}</legend>
-
-        <Field name="companyRole" label={f.companyRole.label} hint={f.companyRole.help} required error={errors.companyRole} fid={fid} errId={errId} hintId={hintId}>
-          {(ids) => (
-            <input
-              {...ids}
-              type="text"
-              autoComplete="organization"
-              value={values.companyRole}
-              disabled={busy}
-              onChange={(e) => set("companyRole", e.target.value)}
-              placeholder={f.companyRole.placeholder}
-              aria-invalid={!!errors.companyRole}
-              className={inputClass}
-            />
-          )}
-        </Field>
-
-        {/* two short fields share a row on desktop */}
-        <div className="grid gap-6 sm:grid-cols-2">
-          <Field name="policyStack" label={f.policyStack.label} required error={errors.policyStack} fid={fid} errId={errId} hintId={hintId}>
-            {(ids) => (
-              <select
-                {...ids}
-                value={values.policyStack}
-                disabled={busy}
-                onChange={(e) => set("policyStack", e.target.value)}
-                aria-invalid={!!errors.policyStack}
-                className={inputClass + (values.policyStack ? "" : " text-ink-dim")}
-              >
-                <option value="" disabled>
-                  {f.policyStack.placeholder}
-                </option>
-                {f.policyStack.options.map((o) => (
-                  <option key={o.value} value={o.value} className="text-ink">
-                    {o.label}
-                  </option>
-                ))}
-              </select>
-            )}
-          </Field>
-
-          <Field name="robotModel" label={f.robotModel.label} hint={f.robotModel.help} required error={errors.robotModel} fid={fid} errId={errId} hintId={hintId}>
-            {(ids) => (
-              <input
-                {...ids}
-                type="text"
-                value={values.robotModel}
-                disabled={busy}
-                onChange={(e) => set("robotModel", e.target.value)}
-                placeholder={f.robotModel.placeholder}
-                aria-invalid={!!errors.robotModel}
-                className={inputClass}
-              />
-            )}
-          </Field>
-        </div>
-
-        <RadioGroup
-          name="wtp"
-          legend={f.wtp.label}
-          hint={f.wtp.help}
-          options={f.wtp.options}
-          value={values.wtp}
-          error={errors.wtp}
-          disabled={busy}
-          onChange={(v) => set("wtp", v)}
-          fid={fid}
-          errId={errId}
-          hintId={hintId}
-        />
-
-        {/* Conditional, always-optional amount — mounts only on yes/maybe. */}
-        {wtpWantsAmount(values.wtp) && (
-          <Field name="wtpAmount" label={f.wtpAmount.label} fid={fid} errId={errId} hintId={hintId}>
-            {(ids) => (
-              <input
-                {...ids}
-                type="text"
-                inputMode="numeric"
-                autoComplete="off"
-                value={values.wtpAmount}
-                disabled={busy}
-                onChange={(e) => set("wtpAmount", e.target.value)}
-                placeholder={f.wtpAmount.placeholder}
-                className={inputClass}
-              />
-            )}
-          </Field>
-        )}
-
         <Field name="email" label={f.email.label} required error={errors.email} fid={fid} errId={errId} hintId={hintId}>
           {(ids) => (
             <input
@@ -379,7 +222,7 @@ export function PilotForm() {
             />
           )}
         </Field>
-      </fieldset>
+      </div>
 
       {/* anti-spam honeypot — off-screen, never reached by keyboard/SR */}
       <div aria-hidden className="absolute left-[-9999px] top-0 h-0 w-0 overflow-hidden">
@@ -500,7 +343,17 @@ function RadioGroup({
     .filter(Boolean)
     .join(" ");
   return (
-    <fieldset className="flex flex-col gap-2" aria-describedby={describedBy || undefined}>
+    // The error summary links to `#${fid(name)}`, and a <fieldset> has no id of
+    // its own — so that link pointed at nothing and clicking the radio group's
+    // error did nothing at all. The id lands here (the radios are suffixed
+    // -yes/-no/-unsure and none of them owns the group's name), and tabIndex=-1
+    // makes the fragment actually MOVE FOCUS rather than merely scroll.
+    <fieldset
+      id={fid(name)}
+      tabIndex={-1}
+      className="flex flex-col gap-2 outline-none focus-visible:ring-2 focus-visible:ring-amber/50"
+      aria-describedby={describedBy || undefined}
+    >
       <legend className="text-[13px] font-medium text-ink">
         {legend}
         <span className="ml-1 text-amber" aria-hidden>
